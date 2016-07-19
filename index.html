@@ -1,57 +1,589 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>Svg-animation-tapestry-test-v3 by alexpreynolds</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">Svg-animation-tapestry-test-v3</h1>
-      <h2 class="project-tagline">A project to test animation of a tapestry of copied SVG elements </h2>
-      <a href="https://github.com/alexpreynolds/svg-animation-tapestry-test-v3" class="btn">View on GitHub</a>
-      <a href="https://github.com/alexpreynolds/svg-animation-tapestry-test-v3/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/alexpreynolds/svg-animation-tapestry-test-v3/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
+    <head>
+        <meta charset="UTF-8">
+        <title>Altius Insitute for Biomedical Sciences</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="assets/css/styles.css" media="screen">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        <!-- cf. http://www.favicomatic.com -->
+        <link rel="apple-touch-icon-precomposed" sizes="57x57" href="assets/favico/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/favico/apple-touch-icon-114x114.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/favico/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/favico/apple-touch-icon-144x144.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="60x60" href="assets/favico/apple-touch-icon-60x60.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="120x120" href="assets/favico/apple-touch-icon-120x120.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="76x76" href="assets/favico/apple-touch-icon-76x76.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="assets/favico/apple-touch-icon-152x152.png" />
+        <link rel="icon" type="image/png" href="assets/favico/favicon-196x196.png" sizes="196x196" />
+        <link rel="icon" type="image/png" href="assets/favico/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/png" href="assets/favico/favicon-32x32.png" sizes="32x32" />
+        <link rel="icon" type="image/png" href="assets/favico/favicon-16x16.png" sizes="16x16" />
+        <link rel="icon" type="image/png" href="assets/favico/favicon-128.png" sizes="128x128" />
+        <meta name="application-name" content="&nbsp;"/>
+        <meta name="msapplication-TileColor" content="#FFFFFF" />
+        <meta name="msapplication-TileImage" content="assets/favico/mstile-144x144.png" />
+        <meta name="msapplication-square70x70logo" content="assets/favico/mstile-70x70.png" />
+        <meta name="msapplication-square150x150logo" content="assets/favico/mstile-150x150.png" />
+        <meta name="msapplication-wide310x150logo" content="assets/favico/mstile-310x150.png" />
+        <meta name="msapplication-square310x310logo" content="assets/favico/mstile-310x310.png" />
+    </head>
+    <body>
+        <div id="parent_container">
+            <div id="svg_container">
+                <div id="node_layers_container"></div>
+                <div id="wordmark_container"></div>
+            </div>
+            <div id="content" style="opacity:0;">
+                <div id="animation_settings">
+                    <form class='settings_form'>
+                        <label>Actions: </label>
+                        <button type="button" name="action_reset_node_layers" id="action_reset_node_layers">Reset</button> 
+                        <button type="button" name="action_pause_animation" id="action_pause_animation">Pause</button>
+                        <br />
+                        <label>Rows: </label>
+                        <select id="rows_count_select">
+                            <option value="3">6</option>
+                            <option value="4">8</option>
+                            <option value="5">10</option>
+                            <option value="6">12</option>
+                            <option value="7">14</option>
+                            <option value="8">16</option>
+                        </select>
+                        <br />
+                        <label>Pick rate: </label>
+                        <select id="evaporation_factor_select">
+                            <option value="0.0125">0.0125</option>
+                            <option value="0.025">0.025</option>
+                            <option value="0.05">0.05</option>
+                            <option value="0.075">0.075</option>
+                            <option value="0.1">0.1</option>
+                            <option value="0.125">0.125</option>
+                        </select>
+                        <br />
+                        <label>X-axis speed increment: </label>
+                        <select id="x_axis_velocity_select">
+                            <option value="0.01">0.01</option>
+                            <option value="0.02">0.02</option>
+                            <option value="0.03">0.03</option>
+                            <option value="0.04">0.04</option>
+                            <option value="0.05">0.05</option>
+                            <option value="0.06">0.06</option>
+                        </select>
+                        <br />
+                        <label>Y-axis speed increment: </label>
+                        <select id="y_axis_velocity_select">
+                            <option value="0.00125">0.00125</option>
+                            <option value="0.0025">0.0025</option>
+                            <option value="0.005">0.005</option>
+                            <option value="0.01">0.01</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="main">
+                    <p>Developing revolutionary technologies to empower breakthrough science</p>
+                    <p>Creating a new scientific environment that radically enables exceptionally talented individuals to do the best work of their lives</p>
+                </div>
+                <div class="contact">
+                    <p>
+                        Inquiries: <a href="mailto:info@altiusinstitute.org">info@altiusinstitute.org</a><br>
+                        2211 Elliott Ave, Suite 600, Seattle WA 98121
+                    </p>
+                </div>
+            </div>
+            <div id="background"><img src="assets/img/background.jpg" alt="Altius Institute for Biomedical Sciences" id="logo_background" class="logo_background" /></div>
+        </div>
+        
+        <!-- cf. https://github.com/petkaantonov/deque -->
+        <script type="text/javascript" src="assets/js/deque.min.js"></script>
+        <script type="text/javascript" src="assets/js/guid.min.js"></script>
 
-    <section class="main-content">
-      <h3>
-<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+        <!-- external frameworks -->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+        <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+        <script type="text/javascript" src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+        <script type="text/javascript" src="https://d3js.org/d3-timer.v1.min.js"></script>
+        
+        <!-- my code -->
+        <script type="text/javascript">
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here <a href="https://guides.github.com/features/mastering-markdown/">using GitHub Flavored Markdown</a>, select a template crafted by a designer, and publish. After your page is generated, you can check out the new <code>gh-pages</code> branch locally. If you’re using GitHub Desktop, simply sync your repository and you’ll see the new branch.</p>
+            var Animation = Animation || {};
 
-<h3>
-<a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Designer Templates</h3>
+            Animation.SVG_ASSET_ROOT = "assets/components/";
 
-<p>We’ve crafted some handsome templates for you to use. Go ahead and click 'Continue to layouts' to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved.</p>
+            Animation.WORDMARK_SCALE = 1.85; // a higher value makes a smaller wordmark
+            Animation.WORDMARK_EASE_FN = "cubic";
+            Animation.WORDMARK_EASE_DURATION_MS = 750;
+            Animation.WORDMARK_FINAL_OPACITY = 1;
 
-<h3>
-<a id="creating-pages-manually" class="anchor" href="#creating-pages-manually" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creating pages manually</h3>
+            Animation.CONTENT_EASE_FN = "cubic";
+            Animation.CONTENT_EASE_DURATION_MS = 750;
+            Animation.CONTENT_FINAL_OPACITY = 1;
+            Animation.CONTENT_TOP_PADDING = 20;
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+            Animation.NODE_LAYERS = 14;
+            Animation.NODE_LAYER_DEFAULT_ROWS = 5;
+            Animation.NODE_LAYER_ID_PREFIX = "node_layer_";
+            Animation.NODE_LAYER_SCALE = 0.9;
+            Animation.NODE_LAYER_SLOWDOWN_FACTOR = 0.5;
+            Animation.NODE_ROW_SQUEEZE_FACTOR = 1.2;
+            Animation.NODE_COL_SQUEEZE_FACTOR = 0.3;
+            Animation.NODE_LAYERS_EASE_FN = "cubic";
+            Animation.NODE_LAYERS_EASE_DURATION_MS = 1000;
+            Animation.NODE_LAYERS_FINAL_OPACITY = 1;
+            Animation.NODE_LAYER_CENTER_X = 114;
+            Animation.NODE_LAYER_CENTER_Y = 109;
+            Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR = 0.05;
 
-<h3>
-<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+            Animation.svg_parent = document.getElementById('svg_container');
+            Animation.wordmark_parent = document.getElementById('wordmark_container');
+            Animation.node_layers_parent = document.getElementById('node_layers_container');
 
-<p>You can <a href="https://help.github.com/articles/basic-writing-and-formatting-syntax/#mentioning-users-and-teams" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor’s GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+            Animation.logo_background_img = document.getElementById('logo_background');
+            Animation.logo_background = { offset : null, width : 0, height : 0, centerX : 0, centerY : 0 };
 
-<h3>
-<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Support or Contact</h3>
+            Animation.node_layers_xml = null;
+            Animation.node_layers_deque = new Deque();
+            Animation.node_layers_ids = [];
+            Animation.node_layers_animating = new Deque();
+            Animation.node_layers_all_visible = false;
+            Animation.node_layer_margin = { top : 0, right : 0, bottom : 0, left : 0 };
+            Animation.node_layers = { max_height : 0, max_width : 0, rows : 0, cols : 0 };
+            Animation.node_layer_rotation_degrees = 0;
+            Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_ROWS;
+            Animation.node_layers_loaded = false;
 
-<p>Having trouble with Pages? Check out our <a href="https://help.github.com/pages">documentation</a> or <a href="https://github.com/contact">contact support</a> and we’ll help you sort it out.</p>
+            Animation.AnimationTypes = {
+                ZIP_RIGHT_RANDOM : "zip_right_random"
+            };
+            Animation.ANIMATION_RANDOM_NODES = 30;
+            Animation.ANIMATION_INITIAL_VELOCITY_X = 0;
+            Animation.ANIMATION_INITIAL_VELOCITY_Y = 0;
+            Animation.ANIMATION_INCREMENT_VELOCITY_X_DEFAULT = 0.04;
+            Animation.ANIMATION_INCREMENT_VELOCITY_Y_DEFAULT = 0.0025;
+            Animation.ANIMATION_INCREMENT_VELOCITY_X = Animation.ANIMATION_INCREMENT_VELOCITY_X_DEFAULT;
+            Animation.ANIMATION_INCREMENT_VELOCITY_Y = Animation.ANIMATION_INCREMENT_VELOCITY_Y_DEFAULT;
+            Animation.ANIMATION_EASE_FN = "linear";
+            Animation.ANIMATION_DURATION_MS = 10;
+            Animation.ANIMATION_INITIAL_ROTATION = 0;
+            Animation.ANIMATION_INCREMENT_ROTATION = 0.5;
+            Animation.ANIMATION_DEFAULT_TYPE = Animation.AnimationTypes.ZIP_RIGHT_RANDOM;
+            Animation.ANIMATION_ROW_PICK_ODDS = Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR;
 
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/alexpreynolds/svg-animation-tapestry-test-v3">Svg-animation-tapestry-test-v3</a> is maintained by <a href="https://github.com/alexpreynolds">alexpreynolds</a>.</span>
+            Animation.animation_type = Animation.ANIMATION_DEFAULT_TYPE;
+            Animation.animation_is_setup = false;
+            Animation.animation_timer_on_hold = false;
+            Animation.animation_verbose = false;
+            Animation.all_node_layers_offscreen = true;
 
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
+            Animation.rows_count_select = document.getElementById("rows_count_select");
+            Animation.rows_count_select.value = Animation.NODE_LAYER_DEFAULT_ROWS;
+            Animation.evaporation_factor_select = document.getElementById("evaporation_factor_select");
+            Animation.evaporation_factor_select.value = Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR;
+            Animation.x_axis_velocity_select = document.getElementById("x_axis_velocity_select");
+            Animation.x_axis_velocity_select.value = Animation.ANIMATION_INCREMENT_VELOCITY_X_DEFAULT;
+            Animation.y_axis_velocity_select = document.getElementById("y_axis_velocity_select");
+            Animation.y_axis_velocity_select.value = Animation.ANIMATION_INCREMENT_VELOCITY_Y_DEFAULT;
 
-    </section>
+            d3.timer(function() { 
+                if (!Animation.animation_timer_on_hold) Animation.tick(Animation.animation_verbose);
+                return Animation.animation_timer_on_hold; 
+            });
 
-  
-  </body>
+            Animation.tick = function(verbose) {
+                if (verbose) console.log("tick", "node_layers_loaded is [" + Animation.node_layers_loaded + "]");
+                //
+                // if Animation.node_layers_loaded is true, we update all node layer 
+                // properties, depending on the animation type; these properties can
+                // specify rotation, on-screen xy position, opacity, etc.
+                //
+                if (Animation.node_layers_loaded && !Animation.node_layers_deque.isEmpty()) {
+                    if (Animation.animation_type == Animation.AnimationTypes.ZIP_RIGHT_RANDOM) {
+                        if (!Animation.animation_is_setup) {
+                            Animation.setup_zip_right_random(verbose, function() { Animation.animation_is_setup = true; });
+                            if (verbose) console.log(Animation.node_layers_animating);
+                        }
+                        else {
+                            Animation.update_zip_right_random(verbose, function() {
+                                // between 0.001 and 2 seconds, get a random row and trigger it
+                                setTimeout(function() {
+                                    if (Math.random() > Animation.ANIMATION_ROW_PICK_ODDS) return;
+                                    if (verbose) console.log("triggering new row");
+                                    if (!Animation.animation_timer_on_hold) Animation.setup_zip_right_random(verbose, null);
+                                }, Animation.get_random_int_inclusive(1, 2000));
+                            });
+                        }
+                    }
+                }
+                if (Animation.node_layers_loaded && Animation.all_node_layers_offscreen) {
+                    Animation.reset_node_layers(verbose);
+                }
+            };
+
+            Animation.setup_zip_right_random = function(verbose, cb) {
+                // get a random row and start moving/rotating the right end of it
+                var random_row_idx = Animation.get_random_int_inclusive(0, Animation.node_layers.rows - 1);
+                var node_layer_row = Animation.node_layers_deque.get(random_row_idx);
+                var node_layer_obj = null;
+                // find obj that is still onscreen
+                for (var col_idx = Animation.node_layers.cols - 1; col_idx >= 0; col_idx--) {
+                    if (verbose) console.log("testing", {'row' : random_row_idx, 'col' : col_idx});
+                    node_layer_obj = Animation.get_node_layer_obj(random_row_idx, col_idx);
+                    try {
+                        var layer_id = node_layer_obj['id'];
+                        var is_static = node_layer_obj['static'];
+                        var is_offscreen = ((node_layer_obj['top'] < -2*node_layer_obj['height']) || (node_layer_obj['top'] > Animation.logo_background.height + 2*node_layer_obj['height']) || (node_layer_obj['left'] > Animation.logo_background.width + 2*node_layer_obj['width']));
+                        if (!is_offscreen && is_static) {
+                            node_layer_obj['static'] = false;
+                            Animation.node_layers_animating.push({'row' : random_row_idx, 'col' : col_idx});
+                            break;
+                        }
+                        else {
+                            if (verbose) console.log("offscreen", {'row' : random_row_idx, 'col' : col_idx});
+                        }
+                    }
+                    catch (err) {
+                        Animation.animation_timer_on_hold = true;
+                    }
+                }
+                Animation.all_node_layers_offscreen = false;
+                if (cb) cb();
+            };
+
+            Animation.update_zip_right_random = function(verbose, cb) {
+                // go through all elements of node_layers_animating deque and update their state
+                var all_offscreen = true;
+                for (var anim_idx = 0; anim_idx < Animation.node_layers_animating.toArray().length; anim_idx++) {
+                    var node_layer_in_animation = Animation.node_layers_animating.get(anim_idx);
+                    var node_layer_obj = Animation.get_node_layer_obj(node_layer_in_animation.row, node_layer_in_animation.col);
+                    var layer_id = node_layer_obj['id'];
+                    node_layer_obj['velocity_x'] += (Animation.ANIMATION_INCREMENT_VELOCITY_X / 6);
+                    if ((node_layer_obj['top'] + (node_layer_obj['height'] / 2)) < (Animation.logo_background.height / 2)) {
+                        node_layer_obj['velocity_y'] -= (Animation.ANIMATION_INCREMENT_VELOCITY_Y / 2);
+                        node_layer_obj['rotation'] -= Animation.ANIMATION_INCREMENT_ROTATION; 
+                    }
+                    else {
+                        node_layer_obj['velocity_y'] += (Animation.ANIMATION_INCREMENT_VELOCITY_Y / 2);
+                        node_layer_obj['rotation'] += Animation.ANIMATION_INCREMENT_ROTATION; 
+                    }
+                    node_layer_obj['left'] = node_layer_obj['left'] + node_layer_obj['velocity_x'];
+                    node_layer_obj['top'] = node_layer_obj['top'] + node_layer_obj['velocity_y'];
+                    var is_offscreen = ((node_layer_obj['top'] < -2*node_layer_obj['height']) || (node_layer_obj['top'] > Animation.logo_background.height + 2*node_layer_obj['height']) || (node_layer_obj['left'] > Animation.logo_background.width + 2*node_layer_obj['width']));
+                    if (!is_offscreen) {
+                        d3.select("#" + layer_id)
+                            .selectAll('.node_layer_transform')
+                            .attr("class", "node_layer_transform zipper_right_with_rotation")
+                            .attr("velocity_x", node_layer_obj['velocity_x'])
+                            .attr("velocity_y", node_layer_obj['velocity_y'])
+                            .attr("rotation", node_layer_obj['rotation'])
+                            .attr("transform", function(d) { return "rotate(" + node_layer_obj['rotation'] + "," + Animation.NODE_LAYER_CENTER_X + "," + Animation.NODE_LAYER_CENTER_Y + ")"; });
+                        d3.select('#' + layer_id)
+                            .transition()
+                            .ease(Animation.ANIMATION_EASE_FN)
+                            .duration(Animation.ANIMATION_DURATION_MS)
+                            .style("left", Animation.num_as_px(node_layer_obj['left']))
+                            .style("top", Animation.num_as_px(node_layer_obj['top']))
+                            .each("end", function() { 
+                                //console.log(layer_id, "left", d3.select('#' + layer_id).style("left"), "top", d3.select('#' + layer_id).style("top"));
+                            });
+                        all_offscreen = false;
+                    }
+                }
+                Animation.all_node_layers_offscreen = all_offscreen;
+                if (cb) cb();
+            };
+
+            window.addEventListener("load", function(evt) {
+                if (evt.verbose) console.log("window event - load");
+                if (Animation.logo_background_img.complete) {
+                    Animation.logo_background_img_loaded(false);
+                } else {
+                    Animation.logo_background_img.addEventListener('load', Animation.logo_background_img_loaded);
+                }
+            });
+
+            window.addEventListener("resize", function(evt) {
+                if (evt.verbose) console.log("window event - resize");
+                if (this.resize_window_timer)
+                    clearTimeout(this.resize_window_timer);
+                this.resize_window_timer = setTimeout(function() {
+                    Animation.position_wordmark();
+                    Animation.position_content();
+                    Animation.position_node_layers();
+                }, 100);
+            });
+
+            document.getElementById("action_reset_node_layers").addEventListener("click", function() { 
+                if (document.getElementById("action_pause_animation").firstChild.data == "Play") {
+                    document.getElementById("action_pause_animation").firstChild.data = "Pause"
+                }
+                Animation.reset_node_layers(false);
+            });
+            
+            document.getElementById("action_pause_animation").addEventListener("click", function() { 
+                if (!Animation.animation_timer_on_hold) {
+                    document.getElementById("action_pause_animation").firstChild.data = "Play";
+                    Animation.animation_timer_on_hold = true;
+                }
+                else {
+                    document.getElementById("action_pause_animation").firstChild.data = "Pause";
+                    Animation.animation_timer_on_hold = false;
+                }
+            });
+
+            Animation.rows_count_select.addEventListener("change", function() { 
+                Animation.node_layer_rows = Animation.rows_count_select.value;
+                Animation.reset_node_layers(false);
+            });
+
+            Animation.evaporation_factor_select.addEventListener("change", function() {
+                Animation.ANIMATION_ROW_PICK_ODDS = Animation.evaporation_factor_select.value;
+                Animation.reset_node_layers(false);
+            });
+
+            Animation.x_axis_velocity_select.addEventListener("change", function() {
+                Animation.ANIMATION_INCREMENT_VELOCITY_X = Animation.x_axis_velocity_select.value;
+                Animation.reset_node_layers(false);
+            });
+
+            Animation.y_axis_velocity_select.addEventListener("change", function() {
+                Animation.ANIMATION_INCREMENT_VELOCITY_Y = Animation.y_axis_velocity_select.value;
+                Animation.reset_node_layers(false);
+            });
+
+            Animation.load_wordmark_svg = function(verbose, cb) {
+                if (verbose) console.log("load_wordmark");
+                var wordmark_path = Animation.SVG_ASSET_ROOT + "wordmark.svg";
+                d3.xml(wordmark_path, "image/svg+xml", function(error, xml) {
+                    if (error) throw error;
+                    Animation.update_logo_background_state();
+                    xml.documentElement.setAttribute("preserveAspectRatio", "xMidYMid meet");
+                    xml.documentElement.setAttribute("class", "svg_content");
+                    xml.documentElement.style.width = Animation.num_as_px(0);
+                    xml.documentElement.style.top = Animation.num_as_px(-1000);
+                    xml.documentElement.style.left = Animation.num_as_px(-1000);
+                    xml.documentElement.style.opacity = 0;
+                    Animation.wordmark_parent.appendChild(xml.documentElement);
+                    if (cb) cb();
+                });
+            };
+
+            Animation.position_wordmark = function(verbose, cb) {
+                if (verbose) console.log("position_wordmark");
+                Animation.update_logo_background_state();
+                var wordmark = d3.select("#wordmark");
+                wordmark.style("width", Animation.num_as_px(logo_background.width / Animation.WORDMARK_SCALE));
+                var top = Animation.num_as_px(Animation.logo_background.centerY - parseInt($('#wordmark').height()) / 2 - parseInt($('#parent_container').css("margin-top")));
+                var left = Animation.num_as_px(Animation.logo_background.centerX - parseInt($('#wordmark').width()) / 2);
+                wordmark.style("top", top).style("left", left);
+                
+                if (wordmark.style("opacity") == 0) {
+                    wordmark.transition().ease(Animation.WORDMARK_EASE_FN).duration(Animation.WORDMARK_EASE_DURATION_MS).style('opacity', Animation.WORDMARK_FINAL_OPACITY).each("end", function() { if (cb) cb(); });
+                }
+            };
+
+            Animation.position_content = function(verbose, cb) {
+                if (verbose) console.log("position_content");
+                Animation.update_logo_background_state();
+                $('#content').css("padding-top", Animation.num_as_px(Animation.logo_background.height + Animation.CONTENT_TOP_PADDING));
+                if ($('#content').css("opacity") == 0) {
+                    d3.select('#content').transition().ease(Animation.CONTENT_EASE_FN).duration(Animation.CONTENT_EASE_DURATION_MS).style('opacity', Animation.CONTENT_FINAL_OPACITY).each("end", function() { if (cb) cb(); });
+                }
+            };
+
+            Animation.update_logo_background_state = function(verbose, cb) {
+                if (verbose) console.log("update_logo_background_state");
+                var $this = $('#logo_background');
+                Animation.logo_background.offset = $this.offset();
+                Animation.logo_background.width = $this.width();
+                Animation.logo_background.height = $this.height();
+                Animation.logo_background.centerX = Animation.logo_background.offset.left + Animation.logo_background.width / 2;
+                Animation.logo_background.centerY = Animation.logo_background.offset.top + Animation.logo_background.height / 2;
+                if (cb) cb();
+            };
+
+            Animation.logo_background_img_loaded = function(verbose) {
+                if (verbose) console.log("logo_background_img_loaded");
+                Animation.update_logo_background_state(verbose);
+                $('#svg_container').css("height", Animation.num_as_px(logo_background.height));
+                Animation.load_wordmark_svg(verbose, function() { 
+                    Animation.trigger_window_resize();
+                    Animation.load_node_layers_svg(verbose, function() {
+                        Animation.init_node_layers(verbose);
+                    });
+                });
+            };
+
+            Animation.load_node_layers_svg = function(verbose, cb) {
+                if (verbose) console.log("load_node_layers");
+                var node_layers_path = Animation.SVG_ASSET_ROOT + "nodes.svg";
+                d3.xml(node_layers_path, "image/svg+xml", function(error, xml) {
+                    if (error) throw error;
+                    xml.documentElement.style.width = Animation.num_as_px(0);
+                    xml.documentElement.style.top = Animation.num_as_px(-1000);
+                    xml.documentElement.style.left = Animation.num_as_px(-1000);
+                    Animation.node_layers_xml = xml;
+                    Animation.node_layers_parent.appendChild(xml.documentElement);
+                    if (cb) cb();
+                });
+            };
+
+            Animation.update_node_layers_state = function(verbose) {
+                if (verbose) console.log("update_node_layers_state");
+                Animation.update_logo_background_state();
+                Animation.node_layers.max_height = (Animation.logo_background.height - (Animation.node_layer_rows * (Animation.node_layer_margin.top + Animation.node_layer_margin.bottom))) / Animation.node_layer_rows;
+                Animation.node_layers.max_width = Animation.node_layers.max_height;
+                Animation.node_layers.rows = Animation.node_layer_rows;
+                Animation.node_layers.cols = Math.ceil((1 / Animation.NODE_COL_SQUEEZE_FACTOR) * Math.ceil(Animation.logo_background.width / Animation.node_layers.max_width));
+            };
+
+            Animation.init_node_layers = function(verbose, cb) {
+                if (verbose) console.log("init_node_layers");
+                Animation.update_node_layers_state(verbose);
+                $('#node_layers_container').height(Animation.logo_background.height);
+                $('#node_layers_container').css("opacity", 0);
+                for (var row_idx = 0; row_idx < Animation.node_layers.rows; row_idx++) {
+                    var node_layer_row = new Deque();
+                    for (var col_idx = 0; col_idx < Animation.node_layers.cols; col_idx++) {
+                        var random_svg_node_layer_id = Animation.random_svg_node_layer_obj().id;
+                        var col_shift = (col_idx % 2) ? 0 : Animation.node_layers.max_height / 2;
+                        var row_shift = Animation.node_layers.max_width / 2;
+                        // build a data model for the offset and size of each node layer
+                        var node_layer_obj = {};
+                        node_layer_obj['id'] = 'node-layer-' + Math.guid(); // CSS selectors cannot start with digits cf. http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
+                        node_layer_obj['static'] = true;
+                        node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
+                        node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
+                        node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
+                        node_layer_obj['top'] = (row_idx * (Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom) - col_shift) * Animation.NODE_ROW_SQUEEZE_FACTOR;
+                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) - row_shift;
+                        node_layer_obj['width'] = Animation.NODE_LAYER_SCALE * Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right;
+                        node_layer_obj['height'] = Animation.NODE_LAYER_SCALE * Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom;
+                        node_layer_obj['original_top'] = node_layer_obj['top'];
+                        node_layer_obj['original_left'] = node_layer_obj['left'];
+                        node_layer_row.push(node_layer_obj);
+                        // render UI element from data model
+                        var layer_id = node_layer_obj['id'];
+                        var layer_classes = "node_layer_container nlrow_" + row_idx + " nlcol_" + col_idx;
+                        d3.select("#node_layers_container")
+                            .append("svg")
+                            .attr("id", layer_id)
+                            .attr("class", layer_classes)
+                            .attr("width", node_layer_obj['width'])
+                            .attr("height", node_layer_obj['height'])
+                            .attr("viewBox", "0 0 216 216")
+                            .append("g")
+                            .attr("class", "node_layer_transform")
+                            .attr("transform", "translate(" + Animation.node_layer_margin.left + "," + Animation.node_layer_margin.top + ")")
+                            .append("use")
+                            .attr("class", "random_node_layer" + (col_idx % 2 ? " random_node_layer_even" : " random_node_layer_odd"))
+                            .attr("xlink:href", "#" + random_svg_node_layer_id);
+                        $('#' + layer_id).css("top", Animation.num_as_px(node_layer_obj['top']));
+                        $('#' + layer_id).css("left", Animation.num_as_px(node_layer_obj['left']));
+                        Animation.node_layers_ids.push(layer_id);
+                    }
+                    Animation.node_layers_deque.push(node_layer_row);
+                }
+                d3.select('#node_layers_container')
+                    .transition()
+                    .ease(Animation.NODE_LAYERS_EASE_FN)
+                    .duration(Animation.NODE_LAYERS_EASE_DURATION_MS)
+                    .style('opacity', Animation.NODE_LAYERS_FINAL_OPACITY)
+                    .each("end", function() { 
+                        Animation.node_layers_all_visible = true; 
+                        Animation.node_layers_loaded = true;
+                        if (cb) cb();
+                    });
+            };
+
+            Animation.position_node_layers = function(verbose, cb) {
+                if (verbose) console.log("position_node_layers");
+                Animation.update_node_layers_state();
+                Animation.update_logo_background_state(false, function() {
+                    $('#node_layers_container').height(Animation.logo_background.height);
+                    $('#svg_container').css("height", Animation.num_as_px(Animation.logo_background.height));
+                });
+                for (var row_idx = 0; row_idx < Animation.node_layers.rows; row_idx++) {
+                    var node_layer_row = Animation.node_layers_deque.get(row_idx);
+                    for (var col_idx = 0; col_idx < Animation.node_layers.cols; col_idx++) {
+                        var node_layer_obj = node_layer_row.get(col_idx);
+                        var layer_id = node_layer_obj['id'];
+                        var col_shift = (col_idx % 2) ? 0 : Animation.node_layers.max_height / 2;
+                        var row_shift = Animation.node_layers.max_width / 2;
+                        /* calculate per-node layer model values */
+                        node_layer_obj['top'] = (row_idx * (Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom) - col_shift) * Animation.NODE_ROW_SQUEEZE_FACTOR;
+                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) - row_shift;
+                        node_layer_obj['width'] = Animation.NODE_LAYER_SCALE * Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right;
+                        node_layer_obj['height'] = Animation.NODE_LAYER_SCALE * Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom;
+                        node_layer_obj['original_top'] = node_layer_obj['top'];
+                        node_layer_obj['original_left'] = node_layer_obj['left'];
+                        /* update UI */
+                        $('#' + layer_id).css("width", Animation.num_as_px(node_layer_obj['width']));
+                        $('#' + layer_id).css("height", Animation.num_as_px(node_layer_obj['height']));
+                        d3.select('#' + layer_id)
+                            .transition()
+                            .ease("linear")
+                            .duration(0)
+                            .style("top", Animation.num_as_px(node_layer_obj['top']))
+                            .style("left", Animation.num_as_px(node_layer_obj['left']));
+                    }
+                }
+                if (cb) cb();
+            };
+
+            Animation.reset_node_layers = function(verbose) {
+                if (verbose) console.log("reset_node_layers");
+                Animation.animation_timer_on_hold = true;
+                Animation.animation_is_setup = false;
+                Animation.all_node_layers_offscreen = true;
+                Animation.node_layers_loaded = false;
+                Animation.node_layers_animating.clear();
+                while (!Animation.node_layers_animating.isEmpty()) {
+                    Animation.node_layers_animating.pop();
+                }
+                Animation.node_layers_deque.clear();
+                while (!Animation.node_layers_deque.isEmpty()) {
+                    Animation.node_layers_deque.pop();
+                }
+                var nl_parent = document.getElementById('node_layers_container');
+                while (nl_parent.hasChildNodes()) {
+                    nl_parent.removeChild(nl_parent.lastChild);
+                }
+                Animation.load_node_layers_svg(verbose, function() {
+                    Animation.init_node_layers(verbose, function() { 
+                        Animation.position_node_layers(verbose, function() {
+                            Animation.animation_timer_on_hold = false;
+                        }); 
+                    });
+                });
+            };
+
+            Animation.random_svg_node_layer_obj = function() {
+                var idx = Math.ceil(Math.random() * Animation.NODE_LAYERS);
+                return { 
+                    'id' : Animation.NODE_LAYER_ID_PREFIX + idx, 
+                    'idx' : idx 
+                }; 
+            };
+
+            Animation.num_as_px = function(i) {
+                return parseFloat(i) + "px";
+            };
+
+            Animation.get_node_layer_obj = function(row, col) {
+                return Animation.node_layers_deque.get(row).get(col);
+            };
+
+            Animation.get_random_int_inclusive = function(min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            };
+
+            Animation.trigger_window_resize = function(verbose) {
+                if (verbose) console.log("trigger_window_resize");
+                window.dispatchEvent(new Event('resize'));
+            };
+
+        </script>
+    </body>
+    
 </html>
