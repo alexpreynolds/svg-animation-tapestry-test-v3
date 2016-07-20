@@ -97,29 +97,11 @@
             Animation.NODE_LAYER_CENTER_Y = 109;
             Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR = 0.05;
 
-            Animation.svg_parent = document.getElementById('svg_container');
-            Animation.wordmark_parent = document.getElementById('wordmark_container');
-            Animation.node_layers_parent = document.getElementById('node_layers_container');
-
-            Animation.logo_background_img = document.getElementById('logo_background');
-            Animation.logo_background = { offset : null, width : 0, height : 0, centerX : 0, centerY : 0 };
-
-            Animation.node_layers_xml = null;
-            Animation.node_layers_deque = new Deque();
-            Animation.node_layers_ids = [];
-            Animation.node_layers_animating = new Deque();
-            Animation.node_layers_all_visible = false;
-            Animation.node_layer_margin = { top : 0, right : 0, bottom : 0, left : 0 };
-            Animation.node_layers = { max_height : 0, max_width : 0, rows : 0, cols : 0 };
-            Animation.node_layer_rotation_degrees = 0;
-            Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_ROWS + 1;
-            Animation.node_layers_loaded = false;
-
             Animation.AnimationTypes = {
                 SCROLL_RIGHT : "scroll_right"
             };
             Animation.ANIMATION_RANDOM_NODES = 30;
-            Animation.ANIMATION_INITIAL_VELOCITY_X = 3;
+            Animation.ANIMATION_INITIAL_VELOCITY_X = 1.5;
             Animation.ANIMATION_INITIAL_VELOCITY_Y = 0;
             Animation.ANIMATION_INCREMENT_VELOCITY_X_DEFAULT = 0.04;
             Animation.ANIMATION_INCREMENT_VELOCITY_Y_DEFAULT = 0.0025;
@@ -137,6 +119,24 @@
             Animation.animation_timer_on_hold = false;
             Animation.animation_verbose = false;
             Animation.all_node_layers_offscreen = true;
+
+            Animation.svg_parent = document.getElementById('svg_container');
+            Animation.wordmark_parent = document.getElementById('wordmark_container');
+            Animation.node_layers_parent = document.getElementById('node_layers_container');
+
+            Animation.logo_background_img = document.getElementById('logo_background');
+            Animation.logo_background = { offset : null, width : 0, height : 0, centerX : 0, centerY : 0 };
+
+            Animation.node_layers_xml = null;
+            Animation.node_layers_deque = new Deque();
+            Animation.node_layers_ids = [];
+            Animation.node_layers_animating = new Deque();
+            Animation.node_layers_all_visible = false;
+            Animation.node_layer_margin = { top : 0, right : 0, bottom : 0, left : 0 };
+            Animation.node_layers = { max_height : 0, max_width : 0, rows : 0, cols : 0 };
+            Animation.node_layer_rotation_degrees = 0;
+            Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_ROWS + 1;
+            Animation.node_layers_loaded = false;
 
             d3.timer(function() { 
                 if (!Animation.animation_timer_on_hold) Animation.tick(Animation.animation_verbose);
