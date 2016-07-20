@@ -406,7 +406,7 @@
                         node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
                         node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
                         node_layer_obj['top'] = (row_idx * (Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom) - col_shift) * Animation.NODE_ROW_SQUEEZE_FACTOR;
-                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) + row_shift;
+                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) + row_shift - Animation.logo_background.width;
                         node_layer_obj['width'] = Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right;
                         node_layer_obj['height'] = Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom;
                         node_layer_obj['original_top'] = node_layer_obj['top'];
@@ -464,7 +464,7 @@
                         var row_shift = (row_idx % 2) ? -5*Animation.node_layers.max_width / 2 : -3*Animation.node_layers.max_width;
                         /* calculate per-node layer model values */
                         node_layer_obj['top'] = (row_idx * (Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom) - col_shift) * Animation.NODE_ROW_SQUEEZE_FACTOR;
-                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) + row_shift;
+                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) + row_shift - Animation.logo_background.width;
                         node_layer_obj['width'] = Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right;
                         node_layer_obj['height'] = Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom;
                         node_layer_obj['original_top'] = node_layer_obj['top'];
