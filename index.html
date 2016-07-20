@@ -430,6 +430,8 @@
                             .attr("xlink:href", "#" + random_svg_node_layer_id);
                         $('#' + layer_id).css("top", Animation.num_as_px(node_layer_obj['top']));
                         $('#' + layer_id).css("left", Animation.num_as_px(node_layer_obj['left']));
+                        $('#' + layer_id).css("width", Animation.num_as_px(node_layer_obj['width'] * Animation.NODE_LAYER_SCALE));
+                        $('#' + layer_id).css("height", Animation.num_as_px(node_layer_obj['height'] * Animation.NODE_LAYER_SCALE));
                         Animation.node_layers_ids.push(layer_id);
                     }
                     Animation.node_layers_deque.push(node_layer_row);
