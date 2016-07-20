@@ -40,44 +40,6 @@
                         <label>Actions: </label>
                         <button type="button" name="action_reset_node_layers" id="action_reset_node_layers">Reset</button> 
                         <button type="button" name="action_pause_animation" id="action_pause_animation">Pause</button>
-                        <br />
-                        <label>Rows: </label>
-                        <select id="rows_count_select">
-                            <option value="3">6</option>
-                            <option value="4">8</option>
-                            <option value="5">10</option>
-                            <option value="6">12</option>
-                            <option value="7">14</option>
-                            <option value="8">16</option>
-                        </select>
-                        <br />
-                        <label>Pick rate: </label>
-                        <select id="evaporation_factor_select">
-                            <option value="0.0125">0.0125</option>
-                            <option value="0.025">0.025</option>
-                            <option value="0.05">0.05</option>
-                            <option value="0.075">0.075</option>
-                            <option value="0.1">0.1</option>
-                            <option value="0.125">0.125</option>
-                        </select>
-                        <br />
-                        <label>X-axis speed increment: </label>
-                        <select id="x_axis_velocity_select">
-                            <option value="0.01">0.01</option>
-                            <option value="0.02">0.02</option>
-                            <option value="0.03">0.03</option>
-                            <option value="0.04">0.04</option>
-                            <option value="0.05">0.05</option>
-                            <option value="0.06">0.06</option>
-                        </select>
-                        <br />
-                        <label>Y-axis speed increment: </label>
-                        <select id="y_axis_velocity_select">
-                            <option value="0.00125">0.00125</option>
-                            <option value="0.0025">0.0025</option>
-                            <option value="0.005">0.005</option>
-                            <option value="0.01">0.01</option>
-                        </select>
                     </form>
                 </div>
                 <div class="main">
@@ -122,12 +84,12 @@
             Animation.CONTENT_TOP_PADDING = 20;
 
             Animation.NODE_LAYERS = 14;
-            Animation.NODE_LAYER_DEFAULT_ROWS = 5;
+            Animation.NODE_LAYER_DEFAULT_ROWS = 8;
             Animation.NODE_LAYER_ID_PREFIX = "node_layer_";
-            Animation.NODE_LAYER_SCALE = 0.9;
+            Animation.NODE_LAYER_SCALE = 1.667;
             Animation.NODE_LAYER_SLOWDOWN_FACTOR = 0.5;
-            Animation.NODE_ROW_SQUEEZE_FACTOR = 1.2;
-            Animation.NODE_COL_SQUEEZE_FACTOR = 0.3;
+            Animation.NODE_ROW_SQUEEZE_FACTOR = 1;
+            Animation.NODE_COL_SQUEEZE_FACTOR = 1;
             Animation.NODE_LAYERS_EASE_FN = "cubic";
             Animation.NODE_LAYERS_EASE_DURATION_MS = 1000;
             Animation.NODE_LAYERS_FINAL_OPACITY = 1;
@@ -150,24 +112,24 @@
             Animation.node_layer_margin = { top : 0, right : 0, bottom : 0, left : 0 };
             Animation.node_layers = { max_height : 0, max_width : 0, rows : 0, cols : 0 };
             Animation.node_layer_rotation_degrees = 0;
-            Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_ROWS;
+            Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_ROWS + 1;
             Animation.node_layers_loaded = false;
 
             Animation.AnimationTypes = {
-                ZIP_RIGHT_RANDOM : "zip_right_random"
+                SCROLL_RIGHT : "scroll_right"
             };
             Animation.ANIMATION_RANDOM_NODES = 30;
-            Animation.ANIMATION_INITIAL_VELOCITY_X = 0;
+            Animation.ANIMATION_INITIAL_VELOCITY_X = 3;
             Animation.ANIMATION_INITIAL_VELOCITY_Y = 0;
             Animation.ANIMATION_INCREMENT_VELOCITY_X_DEFAULT = 0.04;
             Animation.ANIMATION_INCREMENT_VELOCITY_Y_DEFAULT = 0.0025;
             Animation.ANIMATION_INCREMENT_VELOCITY_X = Animation.ANIMATION_INCREMENT_VELOCITY_X_DEFAULT;
             Animation.ANIMATION_INCREMENT_VELOCITY_Y = Animation.ANIMATION_INCREMENT_VELOCITY_Y_DEFAULT;
-            Animation.ANIMATION_EASE_FN = "linear";
-            Animation.ANIMATION_DURATION_MS = 10;
-            Animation.ANIMATION_INITIAL_ROTATION = 0;
+            Animation.ANIMATION_EASE_FN = "none";
+            Animation.ANIMATION_DURATION_MS = 0;
+            Animation.ANIMATION_INITIAL_ROTATION = 0.5;
             Animation.ANIMATION_INCREMENT_ROTATION = 0.5;
-            Animation.ANIMATION_DEFAULT_TYPE = Animation.AnimationTypes.ZIP_RIGHT_RANDOM;
+            Animation.ANIMATION_DEFAULT_TYPE = Animation.AnimationTypes.SCROLL_RIGHT;
             Animation.ANIMATION_ROW_PICK_ODDS = Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR;
 
             Animation.animation_type = Animation.ANIMATION_DEFAULT_TYPE;
@@ -175,15 +137,6 @@
             Animation.animation_timer_on_hold = false;
             Animation.animation_verbose = false;
             Animation.all_node_layers_offscreen = true;
-
-            Animation.rows_count_select = document.getElementById("rows_count_select");
-            Animation.rows_count_select.value = Animation.NODE_LAYER_DEFAULT_ROWS;
-            Animation.evaporation_factor_select = document.getElementById("evaporation_factor_select");
-            Animation.evaporation_factor_select.value = Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR;
-            Animation.x_axis_velocity_select = document.getElementById("x_axis_velocity_select");
-            Animation.x_axis_velocity_select.value = Animation.ANIMATION_INCREMENT_VELOCITY_X_DEFAULT;
-            Animation.y_axis_velocity_select = document.getElementById("y_axis_velocity_select");
-            Animation.y_axis_velocity_select.value = Animation.ANIMATION_INCREMENT_VELOCITY_Y_DEFAULT;
 
             d3.timer(function() { 
                 if (!Animation.animation_timer_on_hold) Animation.tick(Animation.animation_verbose);
@@ -198,20 +151,13 @@
                 // specify rotation, on-screen xy position, opacity, etc.
                 //
                 if (Animation.node_layers_loaded && !Animation.node_layers_deque.isEmpty()) {
-                    if (Animation.animation_type == Animation.AnimationTypes.ZIP_RIGHT_RANDOM) {
+                    if (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT) {
                         if (!Animation.animation_is_setup) {
-                            Animation.setup_zip_right_random(verbose, function() { Animation.animation_is_setup = true; });
+                            Animation.setup_scroll_right(verbose, function() { Animation.animation_is_setup = true; });
                             if (verbose) console.log(Animation.node_layers_animating);
                         }
                         else {
-                            Animation.update_zip_right_random(verbose, function() {
-                                // between 0.001 and 2 seconds, get a random row and trigger it
-                                setTimeout(function() {
-                                    if (Math.random() > Animation.ANIMATION_ROW_PICK_ODDS) return;
-                                    if (verbose) console.log("triggering new row");
-                                    if (!Animation.animation_timer_on_hold) Animation.setup_zip_right_random(verbose, null);
-                                }, Animation.get_random_int_inclusive(1, 2000));
-                            });
+                            Animation.update_scroll_right(verbose, null);
                         }
                     }
                 }
@@ -220,63 +166,78 @@
                 }
             };
 
-            Animation.setup_zip_right_random = function(verbose, cb) {
-                // get a random row and start moving/rotating the right end of it
-                var random_row_idx = Animation.get_random_int_inclusive(0, Animation.node_layers.rows - 1);
-                var node_layer_row = Animation.node_layers_deque.get(random_row_idx);
-                var node_layer_obj = null;
-                // find obj that is still onscreen
-                for (var col_idx = Animation.node_layers.cols - 1; col_idx >= 0; col_idx--) {
-                    if (verbose) console.log("testing", {'row' : random_row_idx, 'col' : col_idx});
-                    node_layer_obj = Animation.get_node_layer_obj(random_row_idx, col_idx);
-                    try {
-                        var layer_id = node_layer_obj['id'];
-                        var is_static = node_layer_obj['static'];
-                        var is_offscreen = ((node_layer_obj['top'] < -2*node_layer_obj['height']) || (node_layer_obj['top'] > Animation.logo_background.height + 2*node_layer_obj['height']) || (node_layer_obj['left'] > Animation.logo_background.width + 2*node_layer_obj['width']));
-                        if (!is_offscreen && is_static) {
-                            node_layer_obj['static'] = false;
-                            Animation.node_layers_animating.push({'row' : random_row_idx, 'col' : col_idx});
-                            break;
+            Animation.setup_scroll_right = function(verbose, cb) {
+                // go through all node layer objects and set their is_static, 
+                // is_offscreen and animating properties
+                for (var row_idx = 0; row_idx < Animation.node_layers.rows; row_idx++) {
+                    for (var col_idx = 0; col_idx < Animation.node_layers.cols; col_idx++) {
+                        node_layer_obj = Animation.get_node_layer_obj(row_idx, col_idx);
+                        try {
+                            var layer_id = node_layer_obj['id'];
+                            var is_static = node_layer_obj['static'];
+                            var is_offscreen = Animation.is_node_layer_offscreen(
+                                node_layer_obj['top'],
+                                node_layer_obj['left'],
+                                node_layer_obj['width'],
+                                node_layer_obj['height'],
+                                Animation.logo_background.width,
+                                Animation.logo_background.height
+                            );
+                            if (!is_offscreen && is_static) {
+                                node_layer_obj['static'] = false;
+                                Animation.node_layers_animating.push({'row' : row_idx, 'col' : col_idx});
+                                node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
+                                node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
+                                node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
+                            }
+                            else {
+                                if (verbose) console.log("offscreen", {'row' : row_idx, 'col' : col_idx});
+                            }
                         }
-                        else {
-                            if (verbose) console.log("offscreen", {'row' : random_row_idx, 'col' : col_idx});
+                        catch (err) {
+                            Animation.animation_timer_on_hold = true;
                         }
-                    }
-                    catch (err) {
-                        Animation.animation_timer_on_hold = true;
                     }
                 }
                 Animation.all_node_layers_offscreen = false;
                 if (cb) cb();
             };
 
-            Animation.update_zip_right_random = function(verbose, cb) {
-                // go through all elements of node_layers_animating deque and update their state
+            Animation.update_scroll_right = function(verbose, cb) {
+                // for all objects in animation, increment their top and left 
+                // properties by velocities
+                //
+                // if object is offscreen, remove from animation, set their top 
+                // and left properties to the left side of the board, add to 
+                // animation deque
                 var all_offscreen = true;
                 for (var anim_idx = 0; anim_idx < Animation.node_layers_animating.toArray().length; anim_idx++) {
                     var node_layer_in_animation = Animation.node_layers_animating.get(anim_idx);
                     var node_layer_obj = Animation.get_node_layer_obj(node_layer_in_animation.row, node_layer_in_animation.col);
                     var layer_id = node_layer_obj['id'];
-                    node_layer_obj['velocity_x'] += (Animation.ANIMATION_INCREMENT_VELOCITY_X / 6);
-                    if ((node_layer_obj['top'] + (node_layer_obj['height'] / 2)) < (Animation.logo_background.height / 2)) {
-                        node_layer_obj['velocity_y'] -= (Animation.ANIMATION_INCREMENT_VELOCITY_Y / 2);
-                        node_layer_obj['rotation'] -= Animation.ANIMATION_INCREMENT_ROTATION; 
-                    }
-                    else {
-                        node_layer_obj['velocity_y'] += (Animation.ANIMATION_INCREMENT_VELOCITY_Y / 2);
-                        node_layer_obj['rotation'] += Animation.ANIMATION_INCREMENT_ROTATION; 
-                    }
                     node_layer_obj['left'] = node_layer_obj['left'] + node_layer_obj['velocity_x'];
                     node_layer_obj['top'] = node_layer_obj['top'] + node_layer_obj['velocity_y'];
-                    var is_offscreen = ((node_layer_obj['top'] < -2*node_layer_obj['height']) || (node_layer_obj['top'] > Animation.logo_background.height + 2*node_layer_obj['height']) || (node_layer_obj['left'] > Animation.logo_background.width + 2*node_layer_obj['width']));
-                    if (!is_offscreen) {
+                    node_layer_obj['rotation'] += Animation.ANIMATION_INCREMENT_ROTATION; 
+                    var is_offscreen = Animation.is_node_layer_offscreen(
+                        node_layer_obj['top'],
+                        node_layer_obj['left'],
+                        node_layer_obj['width'],
+                        node_layer_obj['height'],
+                        Animation.logo_background.width,
+                        Animation.logo_background.height
+                    );
+                    var is_about_to_go_off_right_edge = Animation.is_node_layer_about_to_go_offscreen_right_edge(
+                        node_layer_obj['left'],
+                        node_layer_obj['width'],
+                        Animation.logo_background.width
+                    );
+                    if (!is_offscreen && !is_about_to_go_off_right_edge) {
                         d3.select("#" + layer_id)
                             .selectAll('.node_layer_transform')
-                            .attr("class", "node_layer_transform zipper_right_with_rotation")
+                            .attr("class", "node_layer_transform update_scroll_right")
                             .attr("velocity_x", node_layer_obj['velocity_x'])
                             .attr("velocity_y", node_layer_obj['velocity_y'])
-                            .attr("rotation", node_layer_obj['rotation'])
-                            .attr("transform", function(d) { return "rotate(" + node_layer_obj['rotation'] + "," + Animation.NODE_LAYER_CENTER_X + "," + Animation.NODE_LAYER_CENTER_Y + ")"; });
+                            .attr("rotation", node_layer_obj['rotation']);
                         d3.select('#' + layer_id)
                             .transition()
                             .ease(Animation.ANIMATION_EASE_FN)
@@ -287,6 +248,14 @@
                                 //console.log(layer_id, "left", d3.select('#' + layer_id).style("left"), "top", d3.select('#' + layer_id).style("top"));
                             });
                         all_offscreen = false;
+                    }
+                    else if (!is_offscreen && is_about_to_go_off_right_edge) {
+                        var new_left_edge = node_layer_obj['left'] - Animation.logo_background.width - 3*Animation.node_layers.max_width/2 + 20;
+                        d3.select('#' + layer_id).style("left", Animation.num_as_px(new_left_edge));
+                        node_layer_obj['left'] = new_left_edge;
+                        all_offscreen = false;
+                    }
+                    else {
                     }
                 }
                 Animation.all_node_layers_offscreen = all_offscreen;
@@ -329,26 +298,6 @@
                     document.getElementById("action_pause_animation").firstChild.data = "Pause";
                     Animation.animation_timer_on_hold = false;
                 }
-            });
-
-            Animation.rows_count_select.addEventListener("change", function() { 
-                Animation.node_layer_rows = Animation.rows_count_select.value;
-                Animation.reset_node_layers(false);
-            });
-
-            Animation.evaporation_factor_select.addEventListener("change", function() {
-                Animation.ANIMATION_ROW_PICK_ODDS = Animation.evaporation_factor_select.value;
-                Animation.reset_node_layers(false);
-            });
-
-            Animation.x_axis_velocity_select.addEventListener("change", function() {
-                Animation.ANIMATION_INCREMENT_VELOCITY_X = Animation.x_axis_velocity_select.value;
-                Animation.reset_node_layers(false);
-            });
-
-            Animation.y_axis_velocity_select.addEventListener("change", function() {
-                Animation.ANIMATION_INCREMENT_VELOCITY_Y = Animation.y_axis_velocity_select.value;
-                Animation.reset_node_layers(false);
             });
 
             Animation.load_wordmark_svg = function(verbose, cb) {
@@ -415,7 +364,7 @@
             };
 
             Animation.load_node_layers_svg = function(verbose, cb) {
-                if (verbose) console.log("load_node_layers");
+                if (verbose) console.log("load_node_layers_svg");
                 var node_layers_path = Animation.SVG_ASSET_ROOT + "nodes.svg";
                 d3.xml(node_layers_path, "image/svg+xml", function(error, xml) {
                     if (error) throw error;
@@ -433,8 +382,8 @@
                 Animation.update_logo_background_state();
                 Animation.node_layers.max_height = (Animation.logo_background.height - (Animation.node_layer_rows * (Animation.node_layer_margin.top + Animation.node_layer_margin.bottom))) / Animation.node_layer_rows;
                 Animation.node_layers.max_width = Animation.node_layers.max_height;
-                Animation.node_layers.rows = Animation.node_layer_rows;
-                Animation.node_layers.cols = Math.ceil((1 / Animation.NODE_COL_SQUEEZE_FACTOR) * Math.ceil(Animation.logo_background.width / Animation.node_layers.max_width));
+                Animation.node_layers.rows = parseInt(Animation.node_layer_rows) + 1;
+                Animation.node_layers.cols = parseInt(Math.ceil((1 / Animation.NODE_COL_SQUEEZE_FACTOR) * Math.ceil(Animation.logo_background.width / Animation.node_layers.max_width))) + 1;
             };
 
             Animation.init_node_layers = function(verbose, cb) {
@@ -446,19 +395,20 @@
                     var node_layer_row = new Deque();
                     for (var col_idx = 0; col_idx < Animation.node_layers.cols; col_idx++) {
                         var random_svg_node_layer_id = Animation.random_svg_node_layer_obj().id;
-                        var col_shift = (col_idx % 2) ? 0 : Animation.node_layers.max_height / 2;
-                        var row_shift = Animation.node_layers.max_width / 2;
+                        var col_shift = Animation.node_layers.max_height / 2; 
+                        var row_shift = (row_idx % 2) ? -5*Animation.node_layers.max_width / 2 : -3*Animation.node_layers.max_width;
                         // build a data model for the offset and size of each node layer
                         var node_layer_obj = {};
                         node_layer_obj['id'] = 'node-layer-' + Math.guid(); // CSS selectors cannot start with digits cf. http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
+                        node_layer_obj['node_id'] = random_svg_node_layer_id;
                         node_layer_obj['static'] = true;
                         node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
                         node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
                         node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
                         node_layer_obj['top'] = (row_idx * (Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom) - col_shift) * Animation.NODE_ROW_SQUEEZE_FACTOR;
-                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) - row_shift;
-                        node_layer_obj['width'] = Animation.NODE_LAYER_SCALE * Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right;
-                        node_layer_obj['height'] = Animation.NODE_LAYER_SCALE * Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom;
+                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) + row_shift;
+                        node_layer_obj['width'] = Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right;
+                        node_layer_obj['height'] = Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom;
                         node_layer_obj['original_top'] = node_layer_obj['top'];
                         node_layer_obj['original_left'] = node_layer_obj['left'];
                         node_layer_row.push(node_layer_obj);
@@ -508,18 +458,18 @@
                     for (var col_idx = 0; col_idx < Animation.node_layers.cols; col_idx++) {
                         var node_layer_obj = node_layer_row.get(col_idx);
                         var layer_id = node_layer_obj['id'];
-                        var col_shift = (col_idx % 2) ? 0 : Animation.node_layers.max_height / 2;
-                        var row_shift = Animation.node_layers.max_width / 2;
+                        var col_shift = Animation.node_layers.max_height / 2; 
+                        var row_shift = (row_idx % 2) ? -5*Animation.node_layers.max_width / 2 : -3*Animation.node_layers.max_width;
                         /* calculate per-node layer model values */
                         node_layer_obj['top'] = (row_idx * (Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom) - col_shift) * Animation.NODE_ROW_SQUEEZE_FACTOR;
-                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) - row_shift;
-                        node_layer_obj['width'] = Animation.NODE_LAYER_SCALE * Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right;
-                        node_layer_obj['height'] = Animation.NODE_LAYER_SCALE * Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom;
+                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) + row_shift;
+                        node_layer_obj['width'] = Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right;
+                        node_layer_obj['height'] = Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom;
                         node_layer_obj['original_top'] = node_layer_obj['top'];
                         node_layer_obj['original_left'] = node_layer_obj['left'];
                         /* update UI */
-                        $('#' + layer_id).css("width", Animation.num_as_px(node_layer_obj['width']));
-                        $('#' + layer_id).css("height", Animation.num_as_px(node_layer_obj['height']));
+                        $('#' + layer_id).css("width", Animation.num_as_px(node_layer_obj['width'] * Animation.NODE_LAYER_SCALE));
+                        $('#' + layer_id).css("height", Animation.num_as_px(node_layer_obj['height'] * Animation.NODE_LAYER_SCALE));
                         d3.select('#' + layer_id)
                             .transition()
                             .ease("linear")
@@ -536,6 +486,7 @@
                 Animation.animation_timer_on_hold = true;
                 Animation.animation_is_setup = false;
                 Animation.all_node_layers_offscreen = true;
+                Animation.node_layer_initial_column_lefts = [];
                 Animation.node_layers_loaded = false;
                 Animation.node_layers_animating.clear();
                 while (!Animation.node_layers_animating.isEmpty()) {
@@ -564,6 +515,19 @@
                     'id' : Animation.NODE_LAYER_ID_PREFIX + idx, 
                     'idx' : idx 
                 }; 
+            };
+
+            Animation.is_node_layer_offscreen = function(obj_top, obj_left, obj_width, obj_height, parent_width, parent_height) {
+                return (
+                    (obj_top < -obj_height) || 
+                    (obj_top > parent_height + obj_height) || 
+                    (obj_left > parent_width + obj_width)
+                );
+            };
+
+            Animation.is_node_layer_about_to_go_offscreen_right_edge = function(obj_left, obj_width, parent_width) {
+                //return (obj_left > (parent_width - obj_width));
+                return (obj_left > parent_width);
             };
 
             Animation.num_as_px = function(i) {
