@@ -324,13 +324,15 @@
                     else if (is_about_to_go_off_right_edge) {
                         // reset top, left, rotation and velocity attributes
                         // var new_left_edge = node_layer_obj['left'] - Animation.logo_background.width - 3*Animation.node_layers.max_width/2 + 20 - Animation.logo_background.width/2;
-                        var new_left_edge = (node_layer_obj['left'] + 2*node_layer_obj['width']) - 3*Animation.logo_background.width/2 -  13;
+                        Animation.animation_timer_on_hold = true;
+                        var new_left_edge = (node_layer_obj['left'] + 2*node_layer_obj['width']) - 3*Animation.logo_background.width/2 + 10;
                         d3.select('#' + layer_id).style("left", Animation.num_as_px(new_left_edge));
                         node_layer_obj['top'] = node_layer_obj['original_top'];
                         node_layer_obj['left'] = new_left_edge;
                         node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
                         node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
                         node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
+                        Animation.animation_timer_on_hold = false;
                         all_offscreen = false;
                     }
                     else {
