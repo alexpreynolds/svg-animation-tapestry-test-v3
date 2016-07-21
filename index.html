@@ -526,6 +526,9 @@
                         $('#' + layer_id).css("left", Animation.num_as_px(node_layer_obj['left']));
                         $('#' + layer_id).css("width", Animation.num_as_px(node_layer_obj['width'] * Animation.NODE_LAYER_SCALE));
                         $('#' + layer_id).css("height", Animation.num_as_px(node_layer_obj['height'] * Animation.NODE_LAYER_SCALE));
+                        if (col_idx == 0) {
+                            Animation.node_layer_current_leftmost_objs[row_idx] = node_layer_obj;
+                        }
                         Animation.node_layers_ids.push(layer_id);
                     }
                     Animation.node_layers_deque.push(node_layer_row);
@@ -573,9 +576,6 @@
                                 .duration(0)
                                 .style("top", Animation.num_as_px(node_layer_obj['top']))
                                 .style("left", Animation.num_as_px(node_layer_obj['left']));
-                            if (col_idx == 0) {
-                                Animation.node_layer_current_leftmost_objs[row_idx] = node_layer_obj;
-                            }
                         }
                         catch (err) {
                             console.log(err);
