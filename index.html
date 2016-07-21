@@ -44,8 +44,11 @@
                         <label>Animation type: </label>
                         <select id="animation_type_select">
                             <option value="scroll_right">Tesselation</option>
-                            <option value="scroll_right_zipper">Tesselation with zipper</option>
-                            <option value="scroll_right_zipper_with_rotation">Tesselation with zipper (+rotation)</option>
+                            <option value="scroll_right_zipper">Tesselation with zipper effect</option>
+                            <option value="scroll_right_zipper_with_rotation">Tesselation with zipper effect (+rotation)</option>
+                            <option value="scroll_right_zipper_with_rotation_with_velocity_jitter">Tesselation with zipper effect (+rotation, +velocityJitter)</option>
+                            <option value="scroll_right_zipper_with_rotation_with_rotation_jitter">Tesselation with zipper effect (+rotation, +rotationJitter)</option>
+                            <option value="scroll_right_zipper_with_rotation_with_velocity_and_rotation_jitter">Tesselation with zipper effect (+rotation, +velocityJitter, +rotationJitter)</option>
                         </select>
                         <br />
                         <label>Rows: </label>
@@ -57,6 +60,56 @@
                             <option value="7">7</option>
                             <option value="8">8</option>
                             <option value="9">9</option>
+                        </select>
+                        <br />
+                        <label>X-axis velocity: </label>
+                        <select id="x_velocity_select">
+                            <option value="0.50">0.50</option>
+                            <option value="0.75">0.75</option>
+                            <option value="1.00">1.00</option>
+                            <option value="1.25">1.25</option>
+                            <option value="1.50">1.50</option>
+                            <option value="1.75">1.75</option>
+                            <option value="2.00">2.00</option>
+                        </select>
+                        <br />
+                        <label>X-axis velocity, increment: </label>
+                        <select id="x_velocity_increment_select">
+                            <option value="0.005">0.005</option>
+                            <option value="0.010">0.010</option>
+                            <option value="0.015">0.015</option>
+                            <option value="0.020">0.020</option>
+                            <option value="0.025">0.025</option>
+                            <option value="0.030">0.030</option>
+                        </select>
+                        <br />
+                        <label>Y-axis velocity: </label>
+                        <select id="y_velocity_select">
+                            <option value="0.00">0.00</option>
+                        </select>
+                        <br />
+                        <label>Y-axis velocity, increment: </label>
+                        <select id="y_velocity_increment_select">
+                            <option value="0.0025">0.0025</option>
+                            <option value="0.005">0.005</option>
+                            <option value="0.010">0.010</option>
+                            <option value="0.015">0.015</option>
+                            <option value="0.020">0.020</option>
+                            <option value="0.025">0.025</option>
+                            <option value="0.030">0.030</option>
+                        </select>
+                        <br />
+                        <label>Rotation, initial: </label>
+                        <select id="rotation_initial_select">
+                            <option value="0.00">0.00</option>
+                        </select>
+                        <br />
+                        <label>Rotation, increment: </label>
+                        <select id="rotation_increment_select">
+                            <option value="0.25">0.25</option>
+                            <option value="0.50">0.50</option>
+                            <option value="0.75">0.75</option>
+                            <option value="1.00">1.00</option>
                         </select>
                     </form>
                 </div>
@@ -115,20 +168,22 @@
             Animation.NODE_LAYER_CENTER_Y = 109;
             Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR = 0.05;
 
-            Animation.ANIMATION_RANDOM_NODES = 30;
-            Animation.ANIMATION_INITIAL_VELOCITY_X = 1.5;
-            Animation.ANIMATION_INITIAL_VELOCITY_Y = 0;
-            Animation.ANIMATION_INCREMENT_VELOCITY_X = 0.015;
-            Animation.ANIMATION_INCREMENT_VELOCITY_Y = 0.0125;
+            Animation.ANIMATION_INITIAL_VELOCITY_X = "0.75";
+            Animation.ANIMATION_INITIAL_VELOCITY_Y = "0.00";
+            Animation.ANIMATION_INCREMENT_VELOCITY_X = "0.015";
+            Animation.ANIMATION_INCREMENT_VELOCITY_Y = "0.0025";
+            Animation.ANIMATION_INITIAL_ROTATION = "0.00";
+            Animation.ANIMATION_INCREMENT_ROTATION = "0.50";
             Animation.ANIMATION_EASE_FN = "linear";
             Animation.ANIMATION_DURATION_MS = 0;
-            Animation.ANIMATION_INITIAL_ROTATION = 0;
-            Animation.ANIMATION_INCREMENT_ROTATION = 0.5;
 
             Animation.AnimationTypes = {
                 SCROLL_RIGHT : "scroll_right",
                 SCROLL_RIGHT_ZIPPER : "scroll_right_zipper",
                 SCROLL_RIGHT_ZIPPER_WITH_ROTATION : "scroll_right_zipper_with_rotation",
+                SCROLL_RIGHT_ZIPPER_WITH_ROTATION_WITH_VELOCITY_JITTER : "scroll_right_zipper_with_rotation_with_velocity_jitter",
+                SCROLL_RIGHT_ZIPPER_WITH_ROTATION_WITH_ROTATION_JITTER : "scroll_right_zipper_with_rotation_with_rotation_jitter",
+                SCROLL_RIGHT_ZIPPER_WITH_ROTATION_WITH_VELOCITY_AND_ROTATION_JITTER : "scroll_right_zipper_with_rotation_with_velocity_and_rotation_jitter",
             };
             Animation.ANIMATION_DEFAULT_TYPE = Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER;
 
@@ -156,19 +211,60 @@
             Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_ROWS + 1;
             Animation.node_layers_loaded = false;
             Animation.node_layer_current_leftmost_objs = [];
+            Animation.node_layer_x_velocity_initial = parseFloat(Animation.ANIMATION_INITIAL_VELOCITY_X);
+            Animation.node_layer_x_velocity_increment = parseFloat(Animation.ANIMATION_INCREMENT_VELOCITY_X);
+            Animation.node_layer_y_velocity_initial = parseFloat(Animation.ANIMATION_INITIAL_VELOCITY_Y);
+            Animation.node_layer_y_velocity_increment = parseFloat(Animation.ANIMATION_INCREMENT_VELOCITY_Y);
+            Animation.node_layer_rotation_initial = parseFloat(Animation.ANIMATION_INITIAL_ROTATION);
+            Animation.node_layer_rotation_increment = parseFloat(Animation.ANIMATION_INCREMENT_ROTATION);
 
             Animation.rows_count_select = document.getElementById("rows_count_select");
             Animation.rows_count_select.value = Animation.NODE_LAYER_DEFAULT_ROWS;
             Animation.animation_type_select = document.getElementById("animation_type_select");
             Animation.animation_type_select.value = Animation.ANIMATION_DEFAULT_TYPE;
+            Animation.x_velocity_select = document.getElementById("x_velocity_select");
+            Animation.x_velocity_select.value = Animation.ANIMATION_INITIAL_VELOCITY_X;
+            Animation.x_velocity_increment_select = document.getElementById("x_velocity_increment_select");
+            Animation.x_velocity_increment_select.value = Animation.ANIMATION_INCREMENT_VELOCITY_X;
+            Animation.y_velocity_select = document.getElementById("y_velocity_select");
+            Animation.y_velocity_select.value = Animation.ANIMATION_INITIAL_VELOCITY_Y;
+            Animation.y_velocity_increment_select = document.getElementById("y_velocity_increment_select");
+            Animation.y_velocity_increment_select.value = Animation.ANIMATION_INCREMENT_VELOCITY_Y;
+            Animation.rotation_initial_select = document.getElementById("rotation_initial_select");
+            Animation.rotation_initial_select.value = Animation.ANIMATION_INITIAL_ROTATION;
+            Animation.rotation_increment_select = document.getElementById("rotation_increment_select");
+            Animation.rotation_increment_select.value = Animation.ANIMATION_INCREMENT_ROTATION;
 
             Animation.rows_count_select.addEventListener("change", function() { 
                 Animation.node_layer_rows = Animation.rows_count_select.value;
                 Animation.reset_node_layers(false);
             });
-
             Animation.animation_type_select.addEventListener("change", function() { 
                 Animation.animation_type = Animation.animation_type_select.value;
+                Animation.reset_node_layers(false);
+            });
+            Animation.x_velocity_select.addEventListener("change", function() { 
+                Animation.node_layer_x_velocity_initial = parseFloat(Animation.x_velocity_select.value);
+                Animation.reset_node_layers(false);
+            });
+            Animation.x_velocity_increment_select.addEventListener("change", function() { 
+                Animation.node_layer_x_velocity_increment = parseFloat(Animation.x_velocity_increment_select.value);
+                Animation.reset_node_layers(false);
+            });
+            Animation.y_velocity_select.addEventListener("change", function() { 
+                Animation.node_layer_y_velocity_initial = parseFloat(Animation.y_velocity_select.value);
+                Animation.reset_node_layers(false);
+            });
+            Animation.y_velocity_increment_select.addEventListener("change", function() { 
+                Animation.node_layer_y_velocity_increment = parseFloat(Animation.y_velocity_increment_select.value);
+                Animation.reset_node_layers(false);
+            });
+            Animation.rotation_initial_select.addEventListener("change", function() { 
+                Animation.node_layer_rotation_initial = parseFloat(Animation.rotation_initial_select.value);
+                Animation.reset_node_layers(false);
+            });
+            Animation.rotation_increment_select.addEventListener("change", function() { 
+                Animation.node_layer_rotation_increment = parseFloat(Animation.rotation_increment_select.value);
                 Animation.reset_node_layers(false);
             });
 
@@ -188,21 +284,37 @@
                 //
                 if (Animation.node_layers_loaded && !Animation.node_layers_deque.isEmpty()) {
                     if (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT) {
+                        var velocity_jitter = false;
                         if (!Animation.animation_is_setup) {
-                            Animation.setup_scroll_right(verbose, function() { Animation.animation_is_setup = true; });
+                            Animation.setup_scroll_right(verbose, velocity_jitter, function() { Animation.animation_is_setup = true; });
                             if (verbose) console.log(Animation.node_layers_animating);
                         }
                         else {
                             Animation.update_scroll_right(verbose, null);
                         }
                     }
-                    else if ((Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER) || (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER_WITH_ROTATION)) {
+                    else if (
+                        (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER) || 
+                        (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER_WITH_ROTATION) ||
+                        (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER_WITH_ROTATION_WITH_VELOCITY_JITTER) ||
+                        (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER_WITH_ROTATION_WITH_ROTATION_JITTER) ||
+                        (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER_WITH_ROTATION_WITH_VELOCITY_AND_ROTATION_JITTER)
+                        ) 
+                    {
+                        var rotate = (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER) ? false : true;
+                        var velocity_jitter = (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER_WITH_ROTATION_WITH_VELOCITY_JITTER) ? true : false;
+                        var rotation_jitter = (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER_WITH_ROTATION_WITH_ROTATION_JITTER) ? true : false;
+                        if (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER_WITH_ROTATION_WITH_VELOCITY_AND_ROTATION_JITTER) {
+                            velocity_jitter = true;
+                            rotation_jitter = true;
+                        }
                         if (!Animation.animation_is_setup) {
-                            Animation.setup_scroll_right(verbose, function() { Animation.animation_is_setup = true; });
+                            Animation.setup_scroll_right(verbose, velocity_jitter, rotation_jitter, function() { 
+                                Animation.animation_is_setup = true; 
+                            });
                             if (verbose) console.log(Animation.node_layers_animating);
                         }
                         else {
-                            var rotate = (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER) ? false : true;
                             Animation.update_scroll_right_zipper(verbose, rotate, null);
                         }
                     }
@@ -215,7 +327,7 @@
                 Animation.tick_count++;
             };
 
-            Animation.setup_scroll_right = function(verbose, cb) {
+            Animation.setup_scroll_right = function(verbose, velocity_jitter, rotation_jitter, cb) {
                 // go through all node layer objects and set their is_static, 
                 // is_offscreen and animating properties
                 for (var row_idx = 0; row_idx < Animation.node_layers.rows; row_idx++) {
@@ -235,9 +347,19 @@
                             if (!is_offscreen && is_static) {
                                 node_layer_obj['static'] = false;
                                 Animation.node_layers_animating.push({'row' : row_idx, 'col' : col_idx});
-                                node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
-                                node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
-                                node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
+                                node_layer_obj['velocity_x'] = Animation.node_layer_x_velocity_initial;
+                                node_layer_obj['velocity_y'] = Animation.node_layer_y_velocity_initial;
+                                node_layer_obj['rotation'] = Animation.node_layer_rotation_initial;
+                                if (velocity_jitter) {
+                                    var x_velocity_increment_jitter = get_random_float_exclusive(0.0, node_layer_obj['velocity_x_increment'] / 2);
+                                    node_layer_obj['velocity_x_increment'] -= x_velocity_increment_jitter;
+                                    var y_velocity_increment_jitter = get_random_float_exclusive(0.0, node_layer_obj['velocity_y_increment'] / 2);
+                                    node_layer_obj['velocity_y_increment'] -= y_velocity_increment_jitter;
+                                }
+                                if (rotation_jitter) {
+                                    var rotation_increment_jitter = get_random_float_exclusive(0.0, node_layer_obj['rotation_increment'] / 2);
+                                    node_layer_obj['rotation_increment'] -= rotation_increment_jitter;
+                                }
                             }
                             else {
                                 if (verbose) console.log("offscreen", {'row' : row_idx, 'col' : col_idx});
@@ -266,7 +388,6 @@
                     var layer_id = node_layer_obj['id'];
                     node_layer_obj['left'] = node_layer_obj['left'] + node_layer_obj['velocity_x'];
                     node_layer_obj['top'] = node_layer_obj['top'] + node_layer_obj['velocity_y'];
-                    node_layer_obj['rotation'] += Animation.ANIMATION_INCREMENT_ROTATION; 
                     var node_layer_is_offscreen = Animation.is_node_layer_offscreen(
                         node_layer_obj['top'],
                         node_layer_obj['left'],
@@ -285,8 +406,7 @@
                             .selectAll('.node_layer_transform')
                             .attr("class", "node_layer_transform update_scroll_right")
                             .attr("velocity_x", node_layer_obj['velocity_x'])
-                            .attr("velocity_y", node_layer_obj['velocity_y'])
-                            .attr("rotation", node_layer_obj['rotation']);
+                            .attr("velocity_y", node_layer_obj['velocity_y']);
                         d3.select('#' + layer_id)
                             .transition()
                             .ease(Animation.ANIMATION_EASE_FN)
@@ -304,10 +424,9 @@
                             .style("left", Animation.num_as_px(new_left_edge));
                         node_layer_obj['top'] = node_layer_obj['original_top'];
                         node_layer_obj['left'] = new_left_edge;
-                        // reset top, left, rotation and velocity attributes
-                        node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
-                        node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
-                        node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
+                        // reset top, left, and velocity attributes
+                        node_layer_obj['velocity_x'] = Animation.node_layer_x_velocity_initial;
+                        node_layer_obj['velocity_y'] = Animation.node_layer_y_velocity_initial;
                         Animation.node_layer_current_leftmost_objs[node_layer_in_animation.row] = node_layer_obj;
                         all_offscreen = false;
                     }
@@ -333,7 +452,7 @@
                             if (rotate) node_layer_obj['rotation'] -= node_layer_obj['rotation_increment']; 
                         }
                         else {
-                            node_layer_obj['velocity_y'] += (Animation.ANIMATION_INCREMENT_VELOCITY_Y / 2);
+                            node_layer_obj['velocity_y'] += (Animation.node_layer_y_velocity_increment / 2);
                             if (rotate) node_layer_obj['rotation'] += node_layer_obj['rotation_increment']; 
                         }    
                     }
@@ -382,15 +501,15 @@
                         node_layer_obj['left'] = new_left_edge;
                         // reset top, left, rotation and velocity attributes
                         if (rotate) {
-                            node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
+                            node_layer_obj['rotation'] = Animation.node_layer_rotation_initial;
                             d3.select("#" + layer_id)
                                 .selectAll('.node_layer_transform')
                                 .attr("transform", function(d) { return "rotate(" + node_layer_obj['rotation'] + "," + Animation.NODE_LAYER_CENTER_X + "," + Animation.NODE_LAYER_CENTER_Y + ")"; });
                         }
-                        node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
-                        node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
-                        node_layer_obj['velocity_x_increment'] = Animation.ANIMATION_INCREMENT_VELOCITY_X;
-                        node_layer_obj['velocity_y_increment'] = Animation.ANIMATION_INCREMENT_VELOCITY_Y;
+                        node_layer_obj['velocity_x'] = Animation.node_layer_x_velocity_initial;
+                        node_layer_obj['velocity_y'] = Animation.node_layer_y_velocity_initial;
+                        node_layer_obj['velocity_x_increment'] = Animation.node_layer_x_velocity_increment;
+                        node_layer_obj['velocity_y_increment'] = Animation.node_layer_y_velocity_increment;
                         Animation.node_layer_current_leftmost_objs[node_layer_in_animation.row] = node_layer_obj;
                         all_offscreen = false;
                     }
@@ -541,12 +660,12 @@
                         node_layer_obj['id'] = 'node-layer-' + Math.guid(); // CSS selectors cannot start with digits cf. http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
                         node_layer_obj['node_id'] = random_svg_node_layer_id;
                         node_layer_obj['static'] = true;
-                        node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
-                        node_layer_obj['rotation_increment'] = Animation.ANIMATION_INCREMENT_ROTATION;
-                        node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
-                        node_layer_obj['velocity_x_increment'] = Animation.ANIMATION_INCREMENT_VELOCITY_X;
-                        node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
-                        node_layer_obj['velocity_y_increment'] = Animation.ANIMATION_INCREMENT_VELOCITY_Y;
+                        node_layer_obj['rotation'] = Animation.node_layer_rotation_initial;
+                        node_layer_obj['rotation_increment'] = Animation.node_layer_rotation_increment;
+                        node_layer_obj['velocity_x'] = Animation.node_layer_x_velocity_initial;
+                        node_layer_obj['velocity_x_increment'] = Animation.node_layer_x_velocity_increment;
+                        node_layer_obj['velocity_y'] = Animation.node_layer_y_velocity_initial;
+                        node_layer_obj['velocity_y_increment'] = Animation.node_layer_y_velocity_increment;
                         node_layer_obj['top'] = (row_idx * (Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom) - col_shift) * Animation.NODE_ROW_SQUEEZE_FACTOR;
                         node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) + row_shift - Animation.logo_background.width/2;
                         node_layer_obj['width'] = Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right;
@@ -693,6 +812,10 @@
 
             Animation.get_random_int_inclusive = function(min, max) {
                 return Math.floor(Math.random() * (max - min + 1) + min);
+            };
+
+            function get_random_float_exclusive(min, max) {
+                return Math.random() * (max - min) + min;
             };
 
             Animation.trigger_window_resize = function(verbose) {
