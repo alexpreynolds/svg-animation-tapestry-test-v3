@@ -98,9 +98,9 @@
             Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR = 0.05;
 
             Animation.ANIMATION_RANDOM_NODES = 30;
-            Animation.ANIMATION_INITIAL_VELOCITY_X = 2;
+            Animation.ANIMATION_INITIAL_VELOCITY_X = 1.5;
             Animation.ANIMATION_INITIAL_VELOCITY_Y = 0;
-            Animation.ANIMATION_INCREMENT_VELOCITY_X = 0.04;
+            Animation.ANIMATION_INCREMENT_VELOCITY_X = 0.06;
             Animation.ANIMATION_INCREMENT_VELOCITY_Y = 0.025;
             Animation.ANIMATION_EASE_FN = "linear";
             Animation.ANIMATION_DURATION_MS = 0;
@@ -232,7 +232,7 @@
                     node_layer_obj['left'] = node_layer_obj['left'] + node_layer_obj['velocity_x'];
                     node_layer_obj['top'] = node_layer_obj['top'] + node_layer_obj['velocity_y'];
                     node_layer_obj['rotation'] += Animation.ANIMATION_INCREMENT_ROTATION; 
-                    var is_offscreen = Animation.is_node_layer_offscreen(
+                    var node_layer_is_offscreen = Animation.is_node_layer_offscreen(
                         node_layer_obj['top'],
                         node_layer_obj['left'],
                         node_layer_obj['width'],
@@ -240,12 +240,12 @@
                         Animation.logo_background.width,
                         Animation.logo_background.height
                     );
-                    var is_about_to_go_off_right_edge = Animation.is_node_layer_about_to_go_offscreen_right_edge(
+                    var node_layer_is_about_to_go_off_the_right_edge = Animation.is_node_layer_about_to_go_offscreen_right_edge(
                         node_layer_obj['left'],
                         node_layer_obj['width'],
                         Animation.logo_background.width
                     );
-                    if (!is_offscreen && !is_about_to_go_off_right_edge) {
+                    if (!node_layer_is_offscreen && !node_layer_is_about_to_go_off_the_right_edge) {
                         d3.select("#" + layer_id)
                             .selectAll('.node_layer_transform')
                             .attr("class", "node_layer_transform update_scroll_right")
@@ -260,10 +260,20 @@
                             .style("top", Animation.num_as_px(node_layer_obj['top']));
                         all_offscreen = false;
                     }
-                    else if (!is_offscreen && is_about_to_go_off_right_edge) {
-                        var new_left_edge = node_layer_obj['left'] - Animation.logo_background.width - 3*Animation.node_layers.max_width/2 + 20;
-                        d3.select('#' + layer_id).style("left", Animation.num_as_px(new_left_edge));
+                    else if (node_layer_is_about_to_go_off_the_right_edge) {
+                        var new_random_svg_node_layer_id = Animation.random_svg_node_layer_obj().id;
+                        var current_row_leftmost_obj = Animation.node_layer_current_leftmost_objs[node_layer_in_animation.row];
+                        var new_left_edge = current_row_leftmost_obj['left'] - node_layer_obj['width'];
+                        d3.select('#' + 'r_' + layer_id)
+                            .attr("xlink:href", "#" + new_random_svg_node_layer_id)
+                            .style("left", Animation.num_as_px(new_left_edge));
+                        node_layer_obj['top'] = node_layer_obj['original_top'];
                         node_layer_obj['left'] = new_left_edge;
+                        // reset top, left, rotation and velocity attributes
+                        node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
+                        node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
+                        node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
+                        Animation.node_layer_current_leftmost_objs[node_layer_in_animation.row] = node_layer_obj;
                         all_offscreen = false;
                     }
                     else {
@@ -293,7 +303,7 @@
                             node_layer_obj['rotation'] += Animation.ANIMATION_INCREMENT_ROTATION; 
                         }    
                     }
-                    var is_offscreen = Animation.is_node_layer_offscreen(
+                    var node_layer_is_offscreen = Animation.is_node_layer_offscreen(
                         node_layer_obj['top'],
                         node_layer_obj['left'],
                         node_layer_obj['width'],
@@ -301,12 +311,12 @@
                         Animation.logo_background.width,
                         Animation.logo_background.height
                     );
-                    var is_about_to_go_off_right_edge = Animation.is_node_layer_about_to_go_offscreen_right_edge(
+                    var node_layer_is_about_to_go_off_the_right_edge = Animation.is_node_layer_about_to_go_offscreen_right_edge(
                         node_layer_obj['left'],
                         node_layer_obj['width'],
                         Animation.logo_background.width
                     );
-                    if (!is_offscreen && !is_about_to_go_off_right_edge) {
+                    if (!node_layer_is_offscreen && !node_layer_is_about_to_go_off_the_right_edge) {
                         d3.select("#" + layer_id)
                             .selectAll('.node_layer_transform')
                             .attr("class", "node_layer_transform update_scroll_right")
@@ -321,21 +331,21 @@
                             .style("top", Animation.num_as_px(node_layer_obj['top']));
                         all_offscreen = false;
                     }
-                    else if (is_about_to_go_off_right_edge) {
-                        // reset top, left, rotation and velocity attributes
-                        // var new_left_edge = node_layer_obj['left'] - Animation.logo_background.width - 3*Animation.node_layers.max_width/2 + 20 - Animation.logo_background.width/2;
-                        //Animation.animation_timer_on_hold = true;
-                        //var new_left_edge = (node_layer_obj['left'] + 2*node_layer_obj['width']) - 3*Animation.logo_background.width/2 + 10;
+                    else if (node_layer_is_about_to_go_off_the_right_edge) {
+                        // get the current leftmost object for the row that is animating
+                        var new_random_svg_node_layer_id = Animation.random_svg_node_layer_obj().id;
                         var current_row_leftmost_obj = Animation.node_layer_current_leftmost_objs[node_layer_in_animation.row];
                         var new_left_edge = current_row_leftmost_obj['left'] - node_layer_obj['width'];
-                        d3.select('#' + layer_id).style("left", Animation.num_as_px(new_left_edge));
+                        d3.select('#' + 'r_' + layer_id)
+                            .attr("xlink:href", "#" + new_random_svg_node_layer_id)
+                            .style("left", Animation.num_as_px(new_left_edge));
                         node_layer_obj['top'] = node_layer_obj['original_top'];
                         node_layer_obj['left'] = new_left_edge;
+                        // reset top, left, rotation and velocity attributes
                         node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
                         node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
                         node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
                         Animation.node_layer_current_leftmost_objs[node_layer_in_animation.row] = node_layer_obj;
-                        //Animation.animation_timer_on_hold = false;
                         all_offscreen = false;
                     }
                     else {
@@ -509,6 +519,7 @@
                             .attr("class", "node_layer_transform")
                             .attr("transform", "translate(" + Animation.node_layer_margin.left + "," + Animation.node_layer_margin.top + ")")
                             .append("use")
+                            .attr("id", "r_" + layer_id)
                             .attr("class", "random_node_layer" + (col_idx % 2 ? " random_node_layer_even" : " random_node_layer_odd"))
                             .attr("xlink:href", "#" + random_svg_node_layer_id);
                         $('#' + layer_id).css("top", Animation.num_as_px(node_layer_obj['top']));
