@@ -136,6 +136,9 @@
             Animation.node_layer_rotation_degrees = 0;
             Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_ROWS + 1;
             Animation.node_layers_loaded = false;
+            Animation.node_layer_original_lefts = [];
+
+            Animation.tick_count = 0;
 
             d3.timer(function() { 
                 if (!Animation.animation_timer_on_hold) Animation.tick(Animation.animation_verbose);
@@ -143,7 +146,7 @@
             });
 
             Animation.tick = function(verbose) {
-                if (verbose) console.log("tick", "node_layers_loaded is [" + Animation.node_layers_loaded + "]");
+                if (verbose) console.log("tick");
                 //
                 // if Animation.node_layers_loaded is true, we update all node layer 
                 // properties, depending on the animation type; these properties can
@@ -173,6 +176,8 @@
                 if (Animation.node_layers_loaded && Animation.all_node_layers_offscreen) {
                     Animation.reset_node_layers(verbose);
                 }
+
+                Animation.tick_count++;
             };
 
             Animation.setup_scroll_right = function(verbose, cb) {
@@ -318,10 +323,10 @@
                     }
                     else if (is_about_to_go_off_right_edge) {
                         // reset top, left, rotation and velocity attributes
-                        var new_left_edge = node_layer_obj['left'] - Animation.logo_background.width - 3*Animation.node_layers.max_width/2 + 20 - Animation.logo_background.width/2;
+                        // var new_left_edge = node_layer_obj['left'] - Animation.logo_background.width - 3*Animation.node_layers.max_width/2 + 20 - Animation.logo_background.width/2;
                         var new_left_edge = (node_layer_obj['left'] + 2*node_layer_obj['width']) - 3*Animation.logo_background.width/2 -  13;
                         d3.select('#' + layer_id).style("left", Animation.num_as_px(new_left_edge));
-                        node_layer_obj['top'] = node_layer_obj['original_top']
+                        node_layer_obj['top'] = node_layer_obj['original_top'];
                         node_layer_obj['left'] = new_left_edge;
                         node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
                         node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
@@ -551,6 +556,9 @@
                             .duration(0)
                             .style("top", Animation.num_as_px(node_layer_obj['top']))
                             .style("left", Animation.num_as_px(node_layer_obj['left']));
+                        if (col_idx == 0) {
+                            Animation.node_layer_original_lefts[row_idx] = node_layer_obj['original_left'];
+                        }
                     }
                 }
                 if (cb) cb();
