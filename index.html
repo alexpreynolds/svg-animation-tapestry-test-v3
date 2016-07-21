@@ -41,13 +41,22 @@
                         <button type="button" name="action_reset_node_layers" id="action_reset_node_layers">Reset</button> 
                         <button type="button" name="action_pause_animation" id="action_pause_animation">Pause</button>
                         <br />
+                        <label>Animation type: </label>
+                        <select id="animation_type_select">
+                            <option value="scroll_right">Tesselation</option>
+                            <option value="scroll_right_zipper">Tesselation with zipper</option>
+                            <option value="scroll_right_zipper_with_rotation">Tesselation with zipper (+rotation)</option>
+                        </select>
+                        <br />
                         <label>Rows: </label>
                         <select id="rows_count_select">
                             <option value="3">3</option>
+                            <option value="4">4</option>
                             <option value="5">5</option>
+                            <option value="6">6</option>
                             <option value="7">7</option>
+                            <option value="8">8</option>
                             <option value="9">9</option>
-                            <option value="11">11</option>
                         </select>
                     </form>
                 </div>
@@ -93,9 +102,9 @@
             Animation.CONTENT_TOP_PADDING = 20;
 
             Animation.NODE_LAYERS = 14;
-            Animation.NODE_LAYER_DEFAULT_ROWS = 9;
+            Animation.NODE_LAYER_DEFAULT_ROWS = 7;
             Animation.NODE_LAYER_ID_PREFIX = "node_layer_";
-            Animation.NODE_LAYER_SCALE = 1.8;
+            Animation.NODE_LAYER_SCALE = 1.7;
             Animation.NODE_LAYER_SLOWDOWN_FACTOR = 0.5;
             Animation.NODE_ROW_SQUEEZE_FACTOR = 1;
             Animation.NODE_COL_SQUEEZE_FACTOR = 1;
@@ -119,6 +128,7 @@
             Animation.AnimationTypes = {
                 SCROLL_RIGHT : "scroll_right",
                 SCROLL_RIGHT_ZIPPER : "scroll_right_zipper",
+                SCROLL_RIGHT_ZIPPER_WITH_ROTATION : "scroll_right_zipper_with_rotation",
             };
             Animation.ANIMATION_DEFAULT_TYPE = Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER;
 
@@ -149,9 +159,16 @@
 
             Animation.rows_count_select = document.getElementById("rows_count_select");
             Animation.rows_count_select.value = Animation.NODE_LAYER_DEFAULT_ROWS;
+            Animation.animation_type_select = document.getElementById("animation_type_select");
+            Animation.animation_type_select.value = Animation.ANIMATION_DEFAULT_TYPE;
 
             Animation.rows_count_select.addEventListener("change", function() { 
                 Animation.node_layer_rows = Animation.rows_count_select.value;
+                Animation.reset_node_layers(false);
+            });
+
+            Animation.animation_type_select.addEventListener("change", function() { 
+                Animation.animation_type = Animation.animation_type_select.value;
                 Animation.reset_node_layers(false);
             });
 
@@ -179,13 +196,14 @@
                             Animation.update_scroll_right(verbose, null);
                         }
                     }
-                    else if (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER) {
+                    else if ((Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER) || (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER_WITH_ROTATION)) {
                         if (!Animation.animation_is_setup) {
                             Animation.setup_scroll_right(verbose, function() { Animation.animation_is_setup = true; });
                             if (verbose) console.log(Animation.node_layers_animating);
                         }
                         else {
-                            Animation.update_scroll_right_zipper(verbose, null);
+                            var rotate = (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER) ? false : true;
+                            Animation.update_scroll_right_zipper(verbose, rotate, null);
                         }
                     }
                 }
@@ -300,7 +318,7 @@
                 if (cb) cb();
             };
 
-            Animation.update_scroll_right_zipper = function(verbose, cb) {
+            Animation.update_scroll_right_zipper = function(verbose, rotate, cb) {
                 var all_offscreen = true;
                 for (var anim_idx = 0; anim_idx < Animation.node_layers_animating.toArray().length; anim_idx++) {
                     var node_layer_in_animation = Animation.node_layers_animating.get(anim_idx);
@@ -308,16 +326,15 @@
                     var layer_id = node_layer_obj['id'];
                     node_layer_obj['left'] = node_layer_obj['left'] + node_layer_obj['velocity_x'];
                     node_layer_obj['top'] = node_layer_obj['top'] + node_layer_obj['velocity_y'];
-                    node_layer_obj['rotation'] += Animation.ANIMATION_INCREMENT_ROTATION;
                     if ((node_layer_obj['left'] + node_layer_obj['width']) > (logo_background.width / 2)) {
-                        node_layer_obj['velocity_x'] += Animation.ANIMATION_INCREMENT_VELOCITY_X;
+                        node_layer_obj['velocity_x'] += node_layer_obj['velocity_x_increment'];
                         if ((node_layer_obj['top'] + (node_layer_obj['height'] / 2)) < (Animation.logo_background.height / 2)) {
-                            node_layer_obj['velocity_y'] -= (Animation.ANIMATION_INCREMENT_VELOCITY_Y / 2);
-                            node_layer_obj['rotation'] -= Animation.ANIMATION_INCREMENT_ROTATION; 
+                            node_layer_obj['velocity_y'] -= (node_layer_obj['velocity_y_increment'] / 2);
+                            if (rotate) node_layer_obj['rotation'] -= node_layer_obj['rotation_increment']; 
                         }
                         else {
                             node_layer_obj['velocity_y'] += (Animation.ANIMATION_INCREMENT_VELOCITY_Y / 2);
-                            node_layer_obj['rotation'] += Animation.ANIMATION_INCREMENT_ROTATION; 
+                            if (rotate) node_layer_obj['rotation'] += node_layer_obj['rotation_increment']; 
                         }    
                     }
                     var node_layer_is_offscreen = Animation.is_node_layer_offscreen(
@@ -340,6 +357,11 @@
                             .attr("velocity_x", node_layer_obj['velocity_x'])
                             .attr("velocity_y", node_layer_obj['velocity_y'])
                             .attr("rotation", node_layer_obj['rotation']);
+                        if (rotate && ((node_layer_obj['left'] + node_layer_obj['width']) > (logo_background.width / 2))) {
+                            d3.select("#" + layer_id)
+                                .selectAll('.node_layer_transform')
+                                .attr("transform", function(d) { return "rotate(" + node_layer_obj['rotation'] + "," + Animation.NODE_LAYER_CENTER_X + "," + Animation.NODE_LAYER_CENTER_Y + ")"; });
+                        }
                         d3.select('#' + layer_id)
                             .transition()
                             .ease(Animation.ANIMATION_EASE_FN)
@@ -359,9 +381,16 @@
                         node_layer_obj['top'] = node_layer_obj['original_top'];
                         node_layer_obj['left'] = new_left_edge;
                         // reset top, left, rotation and velocity attributes
-                        node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
+                        if (rotate) {
+                            node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
+                            d3.select("#" + layer_id)
+                                .selectAll('.node_layer_transform')
+                                .attr("transform", function(d) { return "rotate(" + node_layer_obj['rotation'] + "," + Animation.NODE_LAYER_CENTER_X + "," + Animation.NODE_LAYER_CENTER_Y + ")"; });
+                        }
                         node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
                         node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
+                        node_layer_obj['velocity_x_increment'] = Animation.ANIMATION_INCREMENT_VELOCITY_X;
+                        node_layer_obj['velocity_y_increment'] = Animation.ANIMATION_INCREMENT_VELOCITY_Y;
                         Animation.node_layer_current_leftmost_objs[node_layer_in_animation.row] = node_layer_obj;
                         all_offscreen = false;
                     }
@@ -513,8 +542,11 @@
                         node_layer_obj['node_id'] = random_svg_node_layer_id;
                         node_layer_obj['static'] = true;
                         node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
+                        node_layer_obj['rotation_increment'] = Animation.ANIMATION_INCREMENT_ROTATION;
                         node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
+                        node_layer_obj['velocity_x_increment'] = Animation.ANIMATION_INCREMENT_VELOCITY_X;
                         node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
+                        node_layer_obj['velocity_y_increment'] = Animation.ANIMATION_INCREMENT_VELOCITY_Y;
                         node_layer_obj['top'] = (row_idx * (Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom) - col_shift) * Animation.NODE_ROW_SQUEEZE_FACTOR;
                         node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) + row_shift - Animation.logo_background.width/2;
                         node_layer_obj['width'] = Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right;
