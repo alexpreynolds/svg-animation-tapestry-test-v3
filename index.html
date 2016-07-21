@@ -86,7 +86,7 @@
             Animation.NODE_LAYERS = 14;
             Animation.NODE_LAYER_DEFAULT_ROWS = 8;
             Animation.NODE_LAYER_ID_PREFIX = "node_layer_";
-            Animation.NODE_LAYER_SCALE = 1.667;
+            Animation.NODE_LAYER_SCALE = 1.8;
             Animation.NODE_LAYER_SLOWDOWN_FACTOR = 0.5;
             Animation.NODE_ROW_SQUEEZE_FACTOR = 1;
             Animation.NODE_COL_SQUEEZE_FACTOR = 1;
@@ -97,22 +97,21 @@
             Animation.NODE_LAYER_CENTER_Y = 109;
             Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR = 0.05;
 
-            Animation.AnimationTypes = {
-                SCROLL_RIGHT : "scroll_right"
-            };
             Animation.ANIMATION_RANDOM_NODES = 30;
-            Animation.ANIMATION_INITIAL_VELOCITY_X = 1;
+            Animation.ANIMATION_INITIAL_VELOCITY_X = 2;
             Animation.ANIMATION_INITIAL_VELOCITY_Y = 0;
-            Animation.ANIMATION_INCREMENT_VELOCITY_X_DEFAULT = 0.04;
-            Animation.ANIMATION_INCREMENT_VELOCITY_Y_DEFAULT = 0.0025;
-            Animation.ANIMATION_INCREMENT_VELOCITY_X = Animation.ANIMATION_INCREMENT_VELOCITY_X_DEFAULT;
-            Animation.ANIMATION_INCREMENT_VELOCITY_Y = Animation.ANIMATION_INCREMENT_VELOCITY_Y_DEFAULT;
-            Animation.ANIMATION_EASE_FN = "none";
+            Animation.ANIMATION_INCREMENT_VELOCITY_X = 0.04;
+            Animation.ANIMATION_INCREMENT_VELOCITY_Y = 0.025;
+            Animation.ANIMATION_EASE_FN = "linear";
             Animation.ANIMATION_DURATION_MS = 0;
-            Animation.ANIMATION_INITIAL_ROTATION = 0.5;
+            Animation.ANIMATION_INITIAL_ROTATION = 0;
             Animation.ANIMATION_INCREMENT_ROTATION = 0.5;
-            Animation.ANIMATION_DEFAULT_TYPE = Animation.AnimationTypes.SCROLL_RIGHT;
-            Animation.ANIMATION_ROW_PICK_ODDS = Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR;
+
+            Animation.AnimationTypes = {
+                SCROLL_RIGHT : "scroll_right",
+                SCROLL_RIGHT_ZIPPER : "scroll_right_zipper",
+            };
+            Animation.ANIMATION_DEFAULT_TYPE = Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER;
 
             Animation.animation_type = Animation.ANIMATION_DEFAULT_TYPE;
             Animation.animation_is_setup = false;
@@ -160,7 +159,17 @@
                             Animation.update_scroll_right(verbose, null);
                         }
                     }
+                    else if (Animation.animation_type == Animation.AnimationTypes.SCROLL_RIGHT_ZIPPER) {
+                        if (!Animation.animation_is_setup) {
+                            Animation.setup_scroll_right(verbose, function() { Animation.animation_is_setup = true; });
+                            if (verbose) console.log(Animation.node_layers_animating);
+                        }
+                        else {
+                            Animation.update_scroll_right_zipper(verbose, null);
+                        }
+                    }
                 }
+
                 if (Animation.node_layers_loaded && Animation.all_node_layers_offscreen) {
                     Animation.reset_node_layers(verbose);
                 }
@@ -243,16 +252,80 @@
                             .ease(Animation.ANIMATION_EASE_FN)
                             .duration(Animation.ANIMATION_DURATION_MS)
                             .style("left", Animation.num_as_px(node_layer_obj['left']))
-                            .style("top", Animation.num_as_px(node_layer_obj['top']))
-                            .each("end", function() { 
-                                //console.log(layer_id, "left", d3.select('#' + layer_id).style("left"), "top", d3.select('#' + layer_id).style("top"));
-                            });
+                            .style("top", Animation.num_as_px(node_layer_obj['top']));
                         all_offscreen = false;
                     }
                     else if (!is_offscreen && is_about_to_go_off_right_edge) {
                         var new_left_edge = node_layer_obj['left'] - Animation.logo_background.width - 3*Animation.node_layers.max_width/2 + 20;
                         d3.select('#' + layer_id).style("left", Animation.num_as_px(new_left_edge));
                         node_layer_obj['left'] = new_left_edge;
+                        all_offscreen = false;
+                    }
+                    else {
+                    }
+                }
+                Animation.all_node_layers_offscreen = all_offscreen;
+                if (cb) cb();
+            };
+
+            Animation.update_scroll_right_zipper = function(verbose, cb) {
+                var all_offscreen = true;
+                for (var anim_idx = 0; anim_idx < Animation.node_layers_animating.toArray().length; anim_idx++) {
+                    var node_layer_in_animation = Animation.node_layers_animating.get(anim_idx);
+                    var node_layer_obj = Animation.get_node_layer_obj(node_layer_in_animation.row, node_layer_in_animation.col);
+                    var layer_id = node_layer_obj['id'];
+                    node_layer_obj['left'] = node_layer_obj['left'] + node_layer_obj['velocity_x'];
+                    node_layer_obj['top'] = node_layer_obj['top'] + node_layer_obj['velocity_y'];
+                    node_layer_obj['rotation'] += Animation.ANIMATION_INCREMENT_ROTATION;
+                    if ((node_layer_obj['left'] + node_layer_obj['width']) > (logo_background.width / 2)) {
+                        node_layer_obj['velocity_x'] += Animation.ANIMATION_INCREMENT_VELOCITY_X;
+                        if ((node_layer_obj['top'] + (node_layer_obj['height'] / 2)) < (Animation.logo_background.height / 2)) {
+                            node_layer_obj['velocity_y'] -= (Animation.ANIMATION_INCREMENT_VELOCITY_Y / 2);
+                            node_layer_obj['rotation'] -= Animation.ANIMATION_INCREMENT_ROTATION; 
+                        }
+                        else {
+                            node_layer_obj['velocity_y'] += (Animation.ANIMATION_INCREMENT_VELOCITY_Y / 2);
+                            node_layer_obj['rotation'] += Animation.ANIMATION_INCREMENT_ROTATION; 
+                        }    
+                    }
+                    var is_offscreen = Animation.is_node_layer_offscreen(
+                        node_layer_obj['top'],
+                        node_layer_obj['left'],
+                        node_layer_obj['width'],
+                        node_layer_obj['height'],
+                        Animation.logo_background.width,
+                        Animation.logo_background.height
+                    );
+                    var is_about_to_go_off_right_edge = Animation.is_node_layer_about_to_go_offscreen_right_edge(
+                        node_layer_obj['left'],
+                        node_layer_obj['width'],
+                        Animation.logo_background.width
+                    );
+                    if (!is_offscreen && !is_about_to_go_off_right_edge) {
+                        d3.select("#" + layer_id)
+                            .selectAll('.node_layer_transform')
+                            .attr("class", "node_layer_transform update_scroll_right")
+                            .attr("velocity_x", node_layer_obj['velocity_x'])
+                            .attr("velocity_y", node_layer_obj['velocity_y'])
+                            .attr("rotation", node_layer_obj['rotation']);
+                        d3.select('#' + layer_id)
+                            .transition()
+                            .ease(Animation.ANIMATION_EASE_FN)
+                            .duration(Animation.ANIMATION_DURATION_MS)
+                            .style("left", Animation.num_as_px(node_layer_obj['left']))
+                            .style("top", Animation.num_as_px(node_layer_obj['top']));
+                        all_offscreen = false;
+                    }
+                    else if (is_about_to_go_off_right_edge) {
+                        // reset top, left, rotation and velocity attributes
+                        var new_left_edge = node_layer_obj['left'] - Animation.logo_background.width - 3*Animation.node_layers.max_width/2 + 20 - Animation.logo_background.width/2;
+                        var new_left_edge = (node_layer_obj['left'] + 2*node_layer_obj['width']) - 3*Animation.logo_background.width/2 -  13;
+                        d3.select('#' + layer_id).style("left", Animation.num_as_px(new_left_edge));
+                        node_layer_obj['top'] = node_layer_obj['original_top']
+                        node_layer_obj['left'] = new_left_edge;
+                        node_layer_obj['rotation'] = Animation.ANIMATION_INITIAL_ROTATION;
+                        node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
+                        node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
                         all_offscreen = false;
                     }
                     else {
@@ -406,7 +479,7 @@
                         node_layer_obj['velocity_x'] = Animation.ANIMATION_INITIAL_VELOCITY_X;
                         node_layer_obj['velocity_y'] = Animation.ANIMATION_INITIAL_VELOCITY_Y;
                         node_layer_obj['top'] = (row_idx * (Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom) - col_shift) * Animation.NODE_ROW_SQUEEZE_FACTOR;
-                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) + row_shift - Animation.logo_background.width;
+                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) + row_shift - Animation.logo_background.width/2;
                         node_layer_obj['width'] = Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right;
                         node_layer_obj['height'] = Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom;
                         node_layer_obj['original_top'] = node_layer_obj['top'];
@@ -464,7 +537,7 @@
                         var row_shift = (row_idx % 2) ? -5*Animation.node_layers.max_width / 2 : -3*Animation.node_layers.max_width;
                         /* calculate per-node layer model values */
                         node_layer_obj['top'] = (row_idx * (Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom) - col_shift) * Animation.NODE_ROW_SQUEEZE_FACTOR;
-                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) + row_shift - Animation.logo_background.width;
+                        node_layer_obj['left'] = col_idx * Animation.NODE_COL_SQUEEZE_FACTOR * (Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right) + row_shift - Animation.logo_background.width/2;
                         node_layer_obj['width'] = Animation.node_layers.max_width + Animation.node_layer_margin.left + Animation.node_layer_margin.right;
                         node_layer_obj['height'] = Animation.node_layers.max_height + Animation.node_layer_margin.top + Animation.node_layer_margin.bottom;
                         node_layer_obj['original_top'] = node_layer_obj['top'];
@@ -521,7 +594,7 @@
 
             Animation.is_node_layer_offscreen = function(obj_top, obj_left, obj_width, obj_height, parent_width, parent_height) {
                 return (
-                    (obj_top < -obj_height) || 
+                    (obj_top < -2*obj_height) || 
                     (obj_top > parent_height + obj_height) || 
                     (obj_left > parent_width + obj_width)
                 );
