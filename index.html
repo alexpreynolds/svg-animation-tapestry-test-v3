@@ -40,6 +40,15 @@
                         <label>Actions: </label>
                         <button type="button" name="action_reset_node_layers" id="action_reset_node_layers">Reset</button> 
                         <button type="button" name="action_pause_animation" id="action_pause_animation">Pause</button>
+                        <br />
+                        <label>Rows: </label>
+                        <select id="rows_count_select">
+                            <option value="3">3</option>
+                            <option value="5">5</option>
+                            <option value="7">7</option>
+                            <option value="9">9</option>
+                            <option value="11">11</option>
+                        </select>
                     </form>
                 </div>
                 <div class="main">
@@ -84,7 +93,7 @@
             Animation.CONTENT_TOP_PADDING = 20;
 
             Animation.NODE_LAYERS = 14;
-            Animation.NODE_LAYER_DEFAULT_ROWS = 8;
+            Animation.NODE_LAYER_DEFAULT_ROWS = 9;
             Animation.NODE_LAYER_ID_PREFIX = "node_layer_";
             Animation.NODE_LAYER_SCALE = 1.8;
             Animation.NODE_LAYER_SLOWDOWN_FACTOR = 0.5;
@@ -137,6 +146,14 @@
             Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_ROWS + 1;
             Animation.node_layers_loaded = false;
             Animation.node_layer_current_leftmost_objs = [];
+
+            Animation.rows_count_select = document.getElementById("rows_count_select");
+            Animation.rows_count_select.value = Animation.NODE_LAYER_DEFAULT_ROWS;
+
+            Animation.rows_count_select.addEventListener("change", function() { 
+                Animation.node_layer_rows = Animation.rows_count_select.value;
+                Animation.reset_node_layers(false);
+            });
 
             Animation.tick_count = 0;
 
@@ -369,9 +386,9 @@
                 if (this.resize_window_timer)
                     clearTimeout(this.resize_window_timer);
                 this.resize_window_timer = setTimeout(function() {
-                    Animation.position_wordmark();
-                    Animation.position_content();
-                    Animation.position_node_layers();
+                    Animation.position_wordmark(evt.verbose, null);
+                    Animation.position_content(evt.verbose, null);
+                    Animation.position_node_layers(evt.verbose, null);
                 }, 200);
             });
 
@@ -578,7 +595,7 @@
                                 .style("left", Animation.num_as_px(node_layer_obj['left']));
                         }
                         catch (err) {
-                            console.log(row_idx, col_idx, err);
+                            console.log("Animation.position_node_layers failed at:", row_idx, col_idx, err);
                         } 
                     }
                 }
