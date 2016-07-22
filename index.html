@@ -60,6 +60,12 @@
                             <option value="7">7</option>
                             <option value="8">8</option>
                             <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
                         </select>
                         <br />
                         <label>X-axis velocity: </label>
@@ -155,7 +161,7 @@
             Animation.CONTENT_TOP_PADDING = 20;
 
             Animation.NODE_LAYERS = 14;
-            Animation.NODE_LAYER_DEFAULT_ROWS = 7;
+            Animation.NODE_LAYER_DEFAULT_ROWS = 9;
             Animation.NODE_LAYER_ID_PREFIX = "node_layer_";
             Animation.NODE_LAYER_SCALE = 1.7;
             Animation.NODE_LAYER_SLOWDOWN_FACTOR = 0.5;
@@ -170,11 +176,11 @@
 
             Animation.ANIMATION_INITIAL_VELOCITY_X = "0.75";
             Animation.ANIMATION_INITIAL_VELOCITY_Y = "0.00";
-            Animation.ANIMATION_INCREMENT_VELOCITY_X = "0.015";
-            Animation.ANIMATION_INCREMENT_VELOCITY_Y = "0.0025";
+            Animation.ANIMATION_INCREMENT_VELOCITY_X = "0.010";
+            Animation.ANIMATION_INCREMENT_VELOCITY_Y = "0.005";
             Animation.ANIMATION_INITIAL_ROTATION = "0.00";
-            Animation.ANIMATION_INCREMENT_ROTATION = "0.50";
-            Animation.ANIMATION_EASE_FN = "linear";
+            Animation.ANIMATION_INCREMENT_ROTATION = "1.00";
+            Animation.ANIMATION_EASE_FN = "none";
             Animation.ANIMATION_DURATION_MS = 0;
 
             Animation.AnimationTypes = {
@@ -352,7 +358,7 @@
                                 node_layer_obj['rotation'] = Animation.node_layer_rotation_initial;
                                 if (velocity_jitter) {
                                     var x_velocity_increment_jitter = get_random_float_exclusive(0.0, node_layer_obj['velocity_x_increment'] / 2);
-                                    node_layer_obj['velocity_x_increment'] -= x_velocity_increment_jitter;
+                                    node_layer_obj['velocity_x_increment'] += x_velocity_increment_jitter;
                                     var y_velocity_increment_jitter = get_random_float_exclusive(0.0, node_layer_obj['velocity_y_increment'] / 2);
                                     node_layer_obj['velocity_y_increment'] -= y_velocity_increment_jitter;
                                 }
@@ -520,8 +526,16 @@
                 if (cb) cb();
             };
 
+            Animation.set_window_scale = function(scale) {
+                var scale = 'scale(' + scale + ')';
+                document.body.style.webkitTransform = scale; // Chrome, Opera, Safari
+                document.body.style.msTransform = scale;     // IE 9
+                document.body.style.transform = scale;       // General
+            };
+
             window.addEventListener("load", function(evt) {
                 if (evt.verbose) console.log("window event - load");
+                Animation.set_window_scale(1);
                 if (Animation.logo_background_img.complete) {
                     Animation.logo_background_img_loaded(false);
                 } else {
