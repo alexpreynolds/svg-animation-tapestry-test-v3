@@ -415,7 +415,7 @@
                             .attr("velocity_y", node_layer_obj['velocity_y']);
                         d3.select('#' + layer_id)
                             .transition()
-                            .ease(Animation.ANIMATION_EASE_FN)
+                            // .ease(Animation.ANIMATION_EASE_FN)
                             .duration(Animation.ANIMATION_DURATION_MS)
                             .style("left", Animation.num_as_px(node_layer_obj['left']))
                             .style("top", Animation.num_as_px(node_layer_obj['top']));
@@ -489,7 +489,7 @@
                         }
                         d3.select('#' + layer_id)
                             .transition()
-                            .ease(Animation.ANIMATION_EASE_FN)
+                            // .ease(Animation.ANIMATION_EASE_FN)
                             .duration(Animation.ANIMATION_DURATION_MS)
                             .style("left", Animation.num_as_px(node_layer_obj['left']))
                             .style("top", Animation.num_as_px(node_layer_obj['top']));
@@ -531,6 +531,7 @@
                 document.body.style.webkitTransform = scale; // Chrome, Opera, Safari
                 document.body.style.msTransform = scale;     // IE 9
                 document.body.style.transform = scale;       // General
+                document.body.style.zoom="100%";
             };
 
             window.addEventListener("load", function(evt) {
