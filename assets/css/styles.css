@@ -84,6 +84,11 @@ img.logo_background:empty {
 #animation_settings {
     display: table;
     margin: auto;
+    background-color: #f2f2f2;
+}
+
+.settings_form {
+    min-width: 500px;
 }
 
 label {

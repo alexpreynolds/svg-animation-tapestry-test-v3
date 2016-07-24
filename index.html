@@ -138,9 +138,8 @@
         <script type="text/javascript" src="assets/js/guid.min.js"></script>
 
         <!-- external frameworks -->
-        <script type="text/javascript" src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
         <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
-        <script type="text/javascript" src="https://d3js.org/d3-interpolate.v1.min.js"></script>
         <script type="text/javascript" src="https://d3js.org/d3-timer.v1.min.js"></script>
         
         <!-- my code -->
@@ -368,7 +367,7 @@
                                 }
                             }
                             else {
-                                if (verbose) console.log("offscreen", {'row' : row_idx, 'col' : col_idx});
+                                if (verbose) console.log("offscreen", {'row' : row_idx, 'col' : col_idx, 'obj' : node_layer_obj});
                             }
                         }
                         catch (err) {
@@ -415,7 +414,7 @@
                             .attr("velocity_y", node_layer_obj['velocity_y']);
                         d3.select('#' + layer_id)
                             .transition()
-                            // .ease(Animation.ANIMATION_EASE_FN)
+                            .ease(Animation.ANIMATION_EASE_FN)
                             .duration(Animation.ANIMATION_DURATION_MS)
                             .style("left", Animation.num_as_px(node_layer_obj['left']))
                             .style("top", Animation.num_as_px(node_layer_obj['top']));
@@ -451,7 +450,7 @@
                     var layer_id = node_layer_obj['id'];
                     node_layer_obj['left'] = node_layer_obj['left'] + node_layer_obj['velocity_x'];
                     node_layer_obj['top'] = node_layer_obj['top'] + node_layer_obj['velocity_y'];
-                    if ((node_layer_obj['left'] + node_layer_obj['width']) > (logo_background.width / 2)) {
+                    if ((node_layer_obj['left'] + node_layer_obj['width']) > (Animation.logo_background.width / 2)) {
                         node_layer_obj['velocity_x'] += node_layer_obj['velocity_x_increment'];
                         if ((node_layer_obj['top'] + (node_layer_obj['height'] / 2)) < (Animation.logo_background.height / 2)) {
                             node_layer_obj['velocity_y'] -= (node_layer_obj['velocity_y_increment'] / 2);
@@ -476,23 +475,24 @@
                         Animation.logo_background.width
                     );
                     if (!node_layer_is_offscreen && !node_layer_is_about_to_go_off_the_right_edge) {
-                        d3.select("#" + layer_id)
-                            .selectAll('.node_layer_transform')
-                            .attr("class", "node_layer_transform update_scroll_right")
-                            .attr("velocity_x", node_layer_obj['velocity_x'])
-                            .attr("velocity_y", node_layer_obj['velocity_y'])
-                            .attr("rotation", node_layer_obj['rotation']);
-                        if (rotate && ((node_layer_obj['left'] + node_layer_obj['width']) > (logo_background.width / 2))) {
+                        if (rotate && ((node_layer_obj['left'] + node_layer_obj['width']) > (Animation.logo_background.width / 2))) {
                             d3.select("#" + layer_id)
+                                .transition()
+                                .ease(Animation.ANIMATION_EASE_FN)
+                                .duration(Animation.ANIMATION_DURATION_MS)
+                                .style("left", Animation.num_as_px(node_layer_obj['left']))
+                                .style("top", Animation.num_as_px(node_layer_obj['top']))
                                 .selectAll('.node_layer_transform')
                                 .attr("transform", function(d) { return "rotate(" + node_layer_obj['rotation'] + "," + Animation.NODE_LAYER_CENTER_X + "," + Animation.NODE_LAYER_CENTER_Y + ")"; });
                         }
-                        d3.select('#' + layer_id)
-                            .transition()
-                            // .ease(Animation.ANIMATION_EASE_FN)
-                            .duration(Animation.ANIMATION_DURATION_MS)
-                            .style("left", Animation.num_as_px(node_layer_obj['left']))
-                            .style("top", Animation.num_as_px(node_layer_obj['top']));
+                        else {
+                            d3.select('#' + layer_id)
+                                .transition()
+                                .ease(Animation.ANIMATION_EASE_FN)
+                                .duration(Animation.ANIMATION_DURATION_MS)
+                                .style("left", Animation.num_as_px(node_layer_obj['left']))
+                                .style("top", Animation.num_as_px(node_layer_obj['top']));
+                        }
                         all_offscreen = false;
                     }
                     else if (node_layer_is_about_to_go_off_the_right_edge) {
@@ -551,7 +551,8 @@
                 this.resize_window_timer = setTimeout(function() {
                     Animation.position_wordmark(evt.verbose, null);
                     Animation.position_content(evt.verbose, null);
-                    Animation.position_node_layers(evt.verbose, null);
+                    // Animation.position_node_layers(evt.verbose, null);
+                    Animation.reset_node_layers(evt.verbose);
                 }, 200);
             });
 
@@ -594,7 +595,7 @@
                 if (verbose) console.log("position_wordmark");
                 Animation.update_logo_background_state();
                 var wordmark = d3.select("#wordmark");
-                wordmark.style("width", Animation.num_as_px(logo_background.width / Animation.WORDMARK_SCALE));
+                wordmark.style("width", Animation.num_as_px(Animation.logo_background.width / Animation.WORDMARK_SCALE));
                 var top = Animation.num_as_px(Animation.logo_background.centerY - parseInt($('#wordmark').height()) / 2 - parseInt($('#parent_container').css("margin-top")));
                 var left = Animation.num_as_px(Animation.logo_background.centerX - parseInt($('#wordmark').width()) / 2);
                 wordmark.style("top", top).style("left", left);
@@ -617,8 +618,8 @@
                 if (verbose) console.log("update_logo_background_state");
                 var $this = $('#logo_background');
                 Animation.logo_background.offset = $this.offset();
-                Animation.logo_background.width = $this.width();
-                Animation.logo_background.height = $this.height();
+                Animation.logo_background.width = JSON.parse(JSON.stringify($this.width())); // $this.width();
+                Animation.logo_background.height = JSON.parse(JSON.stringify($this.height())); // $this.height();
                 Animation.logo_background.centerX = Animation.logo_background.offset.left + Animation.logo_background.width / 2;
                 Animation.logo_background.centerY = Animation.logo_background.offset.top + Animation.logo_background.height / 2;
                 if (cb) cb();
@@ -656,7 +657,17 @@
                 Animation.node_layers.max_height = (Animation.logo_background.height - (Animation.node_layer_rows * (Animation.node_layer_margin.top + Animation.node_layer_margin.bottom))) / Animation.node_layer_rows;
                 Animation.node_layers.max_width = Animation.node_layers.max_height;
                 Animation.node_layers.rows = parseInt(Animation.node_layer_rows) + 1;
-                Animation.node_layers.cols = parseInt(Math.ceil((1 / Animation.NODE_COL_SQUEEZE_FACTOR) * Math.ceil(Animation.logo_background.width / Animation.node_layers.max_width))) + 1;
+                
+                // use the following column count when the x velocity increment is 0, 
+                // to generate a full field of elements. 
+
+                // Animation.node_layers.cols = parseInt(Math.ceil((1 / Animation.NODE_COL_SQUEEZE_FACTOR) * Math.ceil(Animation.logo_background.width / Animation.node_layers.max_width))) + 1;
+
+                // otherwise, to help improve performance we reduce the number of 
+                // elements by reducing the number of columns to only those needed 
+                // for viewing onscreen
+
+                Animation.node_layers.cols = parseInt(Math.ceil((1 / Animation.NODE_COL_SQUEEZE_FACTOR) * Math.ceil((3 * Animation.logo_background.width / 5) / Animation.node_layers.max_width))) + 4;
             };
 
             Animation.init_node_layers = function(verbose, cb) {
@@ -772,6 +783,9 @@
                 if (verbose) console.log("reset_node_layers");
                 Animation.animation_timer_on_hold = true;
                 Animation.animation_is_setup = false;
+                if (document.getElementById("action_pause_animation").firstChild.data == "Play") {
+                    document.getElementById("action_pause_animation").firstChild.data = "Pause"
+                }
                 Animation.all_node_layers_offscreen = true;
                 Animation.node_layer_initial_column_lefts = [];
                 Animation.node_layers_loaded = false;
