@@ -160,7 +160,7 @@
             Animation.CONTENT_TOP_PADDING = 20;
 
             Animation.NODE_LAYERS = 14;
-            Animation.NODE_LAYER_DEFAULT_ROWS = 9;
+            Animation.NODE_LAYER_DEFAULT_ROWS = 8;
             Animation.NODE_LAYER_ID_PREFIX = "node_layer_";
             Animation.NODE_LAYER_SCALE = 1.7;
             Animation.NODE_LAYER_SLOWDOWN_FACTOR = 0.5;
@@ -168,7 +168,7 @@
             Animation.NODE_COL_SQUEEZE_FACTOR = 1;
             Animation.NODE_LAYERS_EASE_FN = "cubic";
             Animation.NODE_LAYERS_EASE_DURATION_MS = 1000;
-            Animation.NODE_LAYERS_FINAL_OPACITY = 0.9;
+            Animation.NODE_LAYERS_FINAL_OPACITY = 1;
             Animation.NODE_LAYER_CENTER_X = 114;
             Animation.NODE_LAYER_CENTER_Y = 109;
             Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR = 0.05;
@@ -667,7 +667,9 @@
                 // elements by reducing the number of columns to only those needed 
                 // for viewing onscreen
 
-                Animation.node_layers.cols = parseInt(Math.ceil((1 / Animation.NODE_COL_SQUEEZE_FACTOR) * Math.ceil((3 * Animation.logo_background.width / 5) / Animation.node_layers.max_width))) + 4;
+                // Animation.node_layers.cols = parseInt(Math.ceil((1 / Animation.NODE_COL_SQUEEZE_FACTOR) * Math.ceil((3 * Animation.logo_background.width / 5) / Animation.node_layers.max_width))) + 4;
+
+                Animation.node_layers.cols = parseInt(Math.ceil((1 / Animation.NODE_COL_SQUEEZE_FACTOR) * Math.ceil((4 * Animation.logo_background.width / 5) / Animation.node_layers.max_width))) + 4;
             };
 
             Animation.init_node_layers = function(verbose, cb) {
