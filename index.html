@@ -359,13 +359,13 @@
                                 node_layer_obj['velocity_y'] = Animation.node_layer_y_velocity_initial;
                                 node_layer_obj['rotation'] = Animation.node_layer_rotation_initial;
                                 if (velocity_jitter) {
-                                    var x_velocity_increment_jitter = get_random_float_exclusive(0.0, node_layer_obj['velocity_x_increment'] / 2);
+                                    var x_velocity_increment_jitter = Animation.get_random_float_exclusive(0.0, node_layer_obj['velocity_x_increment'] / 2);
                                     node_layer_obj['velocity_x_increment'] += x_velocity_increment_jitter;
-                                    var y_velocity_increment_jitter = get_random_float_exclusive(0.0, node_layer_obj['velocity_y_increment'] / 2);
+                                    var y_velocity_increment_jitter = Animation.get_random_float_exclusive(0.0, node_layer_obj['velocity_y_increment'] / 2);
                                     node_layer_obj['velocity_y_increment'] -= y_velocity_increment_jitter;
                                 }
                                 if (rotation_jitter) {
-                                    var rotation_increment_jitter = get_random_float_exclusive(0.0, node_layer_obj['rotation_increment'] / 2);
+                                    var rotation_increment_jitter = Animation.get_random_float_exclusive(0.0, node_layer_obj['rotation_increment'] / 2);
                                     node_layer_obj['rotation_increment'] -= rotation_increment_jitter;
                                 }
                             }
@@ -877,7 +877,7 @@
                 return Math.floor(Math.random() * (max - min + 1) + min);
             };
 
-            function get_random_float_exclusive(min, max) {
+            Animation.get_random_float_exclusive = function(min, max) {
                 return Math.random() * (max - min) + min;
             };
 
