@@ -148,6 +148,8 @@
             var Animation = Animation || {};
 
             Animation.SVG_ASSET_ROOT = "assets/components/";
+            Animation.DEFAULT_MOBILE_PARENT_MARGIN_TOP = '0px';
+            Animation.DEFAULT_DESKTOP_PARENT_MARGIN_TOP = '50px';
 
             Animation.WORDMARK_SCALE = 1.65; // a higher value makes a smaller wordmark
             Animation.WORDMARK_EASE_FN = "cubic";
@@ -161,6 +163,7 @@
 
             Animation.NODE_LAYERS = 14;
             Animation.NODE_LAYER_DEFAULT_ROWS = 8;
+            Animation.NODE_LAYER_DEFAULT_MOBILE_ROWS = 4;
             Animation.NODE_LAYER_ID_PREFIX = "node_layer_";
             Animation.NODE_LAYER_SCALE = 1.7;
             Animation.NODE_LAYER_SLOWDOWN_FACTOR = 0.5;
@@ -654,18 +657,33 @@
             Animation.update_node_layers_state = function(verbose) {
                 if (verbose) console.log("update_node_layers_state");
                 Animation.update_logo_background_state();
+
+                // if the animation settings panel is not visible, adjust the
+                // number of rows and content padding, if the screen width 768 or 
+                // less (i.e. mobile devices) so as to improve animation performance
+
+                if (!$('#animation_settings').is(":visible")) {
+                    if (screen && screen.width <= 768) {    
+                        Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_MOBILE_ROWS + 1;
+                        $('#parent_container').css('margin-top', Animation.DEFAULT_MOBILE_PARENT_MARGIN_TOP);
+                    }
+                    else {
+                        $('#parent_container').css('margin-top', Animation.DEFAULT_DESKTOP_PARENT_MARGIN_TOP);
+                    }
+                }
+
                 Animation.node_layers.max_height = (Animation.logo_background.height - (Animation.node_layer_rows * (Animation.node_layer_margin.top + Animation.node_layer_margin.bottom))) / Animation.node_layer_rows;
                 Animation.node_layers.max_width = Animation.node_layers.max_height;
                 Animation.node_layers.rows = parseInt(Animation.node_layer_rows) + 1;
                 
                 // use the following column count when the x velocity increment is 0, 
-                // to generate a full field of elements. 
+                // to generate a full field of elements; for example:
 
                 // Animation.node_layers.cols = parseInt(Math.ceil((1 / Animation.NODE_COL_SQUEEZE_FACTOR) * Math.ceil(Animation.logo_background.width / Animation.node_layers.max_width))) + 1;
 
                 // otherwise, to help improve performance we reduce the number of 
                 // elements by reducing the number of columns to only those needed 
-                // for viewing onscreen
+                // for viewing onscreen; for example:
 
                 // Animation.node_layers.cols = parseInt(Math.ceil((1 / Animation.NODE_COL_SQUEEZE_FACTOR) * Math.ceil((3 * Animation.logo_background.width / 5) / Animation.node_layers.max_width))) + 4;
 
