@@ -162,7 +162,7 @@
             Animation.CONTENT_TOP_PADDING = 20;
 
             Animation.NODE_LAYERS = 14;
-            Animation.NODE_LAYER_DEFAULT_ROWS = 8;
+            Animation.NODE_LAYER_DEFAULT_DESKTOP_ROWS = 8;
             Animation.NODE_LAYER_DEFAULT_MOBILE_ROWS = 4;
             Animation.NODE_LAYER_ID_PREFIX = "node_layer_";
             Animation.NODE_LAYER_SCALE = 1.7;
@@ -174,7 +174,7 @@
             Animation.NODE_LAYERS_FINAL_OPACITY = 1;
             Animation.NODE_LAYER_CENTER_X = 114;
             Animation.NODE_LAYER_CENTER_Y = 109;
-            Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR = 0.05;
+            Animation.NODE_LAYER_DEFAULT_MOBILE_FACTOR = 2;
 
             Animation.ANIMATION_INITIAL_VELOCITY_X = "1.50";
             Animation.ANIMATION_INITIAL_VELOCITY_Y = "0.00";
@@ -216,7 +216,7 @@
             Animation.node_layer_margin = { top : 0, right : 0, bottom : 0, left : 0 };
             Animation.node_layers = { max_height : 0, max_width : 0, rows : 0, cols : 0 };
             Animation.node_layer_rotation_degrees = 0;
-            Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_ROWS + 1;
+            Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_DESKTOP_ROWS + 1;
             Animation.node_layers_loaded = false;
             Animation.node_layer_current_leftmost_objs = [];
             Animation.node_layer_x_velocity_initial = parseFloat(Animation.ANIMATION_INITIAL_VELOCITY_X);
@@ -227,7 +227,7 @@
             Animation.node_layer_rotation_increment = parseFloat(Animation.ANIMATION_INCREMENT_ROTATION);
 
             Animation.rows_count_select = document.getElementById("rows_count_select");
-            Animation.rows_count_select.value = Animation.NODE_LAYER_DEFAULT_ROWS;
+            Animation.rows_count_select.value = Animation.NODE_LAYER_DEFAULT_DESKTOP_ROWS;
             Animation.animation_type_select = document.getElementById("animation_type_select");
             Animation.animation_type_select.value = Animation.ANIMATION_DEFAULT_TYPE;
             Animation.x_velocity_select = document.getElementById("x_velocity_select");
@@ -611,7 +611,7 @@
             Animation.position_content = function(verbose, cb) {
                 if (verbose) console.log("position_content");
                 Animation.update_logo_background_state();
-                $('#content').css("padding-top", Animation.num_as_px(Animation.logo_background.height + Animation.CONTENT_TOP_PADDING / 2));
+                $('#content').css("padding-top", Animation.num_as_px(Animation.logo_background.height));
                 if ($('#content').css("opacity") == 0) {
                     d3.select('#content').transition().ease(Animation.CONTENT_EASE_FN).duration(Animation.CONTENT_EASE_DURATION_MS).style('opacity', Animation.CONTENT_FINAL_OPACITY).each("end", function() { if (cb) cb(); });
                 }
@@ -659,16 +659,30 @@
                 Animation.update_logo_background_state();
 
                 // if the animation settings panel is not visible, adjust the
-                // number of rows and content padding, if the screen width 768 or 
-                // less (i.e. mobile devices) so as to improve animation performance
+                // row count, content padding, and node redraw parameters if the 
+                // screen width 768 or less (i.e. mobile devices) so as to improve 
+                // animation performance
 
                 if (!$('#animation_settings').is(":visible")) {
                     if (screen && screen.width <= 768) {    
                         Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_MOBILE_ROWS + 1;
                         $('#parent_container').css('margin-top', Animation.DEFAULT_MOBILE_PARENT_MARGIN_TOP);
+                        Animation.node_layer_x_velocity_initial = parseFloat(Animation.ANIMATION_INITIAL_VELOCITY_X / Animation.NODE_LAYER_DEFAULT_MOBILE_FACTOR);
+                        Animation.node_layer_x_velocity_increment = parseFloat(Animation.ANIMATION_INCREMENT_VELOCITY_X / Animation.NODE_LAYER_DEFAULT_MOBILE_FACTOR);
+                        Animation.node_layer_y_velocity_initial = parseFloat(Animation.ANIMATION_INITIAL_VELOCITY_Y / Animation.NODE_LAYER_DEFAULT_MOBILE_FACTOR);
+                        Animation.node_layer_y_velocity_increment = parseFloat(Animation.ANIMATION_INCREMENT_VELOCITY_Y / Animation.NODE_LAYER_DEFAULT_MOBILE_FACTOR);
+                        Animation.node_layer_rotation_initial = parseFloat(Animation.ANIMATION_INITIAL_ROTATION / Animation.NODE_LAYER_DEFAULT_MOBILE_FACTOR);
+                        Animation.node_layer_rotation_increment = parseFloat(Animation.ANIMATION_INCREMENT_ROTATION / Animation.NODE_LAYER_DEFAULT_MOBILE_FACTOR);
                     }
                     else {
+                        Animation.node_layer_rows = Animation.NODE_LAYER_DEFAULT_DESKTOP_ROWS + 1;
                         $('#parent_container').css('margin-top', Animation.DEFAULT_DESKTOP_PARENT_MARGIN_TOP);
+                        Animation.node_layer_x_velocity_initial = parseFloat(Animation.ANIMATION_INITIAL_VELOCITY_X);
+                        Animation.node_layer_x_velocity_increment = parseFloat(Animation.ANIMATION_INCREMENT_VELOCITY_X);
+                        Animation.node_layer_y_velocity_initial = parseFloat(Animation.ANIMATION_INITIAL_VELOCITY_Y);
+                        Animation.node_layer_y_velocity_increment = parseFloat(Animation.ANIMATION_INCREMENT_VELOCITY_Y);
+                        Animation.node_layer_rotation_initial = parseFloat(Animation.ANIMATION_INITIAL_ROTATION);
+                        Animation.node_layer_rotation_increment = parseFloat(Animation.ANIMATION_INCREMENT_ROTATION);
                     }
                 }
 
