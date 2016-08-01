@@ -130,7 +130,7 @@
                     </p>
                 </div>
             </div>
-            <div id="background"><img src="assets/img/background.jpg" alt="Altius Institute for Biomedical Sciences" id="logo_background" class="logo_background" /></div>
+            <div id="background"><img src="assets/img/background.revC.jpg" alt="Altius Institute for Biomedical Sciences" id="logo_background" class="logo_background" /></div>
         </div>
         
         <!-- cf. https://github.com/petkaantonov/deque -->
@@ -149,7 +149,7 @@
 
             Animation.SVG_ASSET_ROOT = "assets/components/";
 
-            Animation.WORDMARK_SCALE = 1.85; // a higher value makes a smaller wordmark
+            Animation.WORDMARK_SCALE = 1.65; // a higher value makes a smaller wordmark
             Animation.WORDMARK_EASE_FN = "cubic";
             Animation.WORDMARK_EASE_DURATION_MS = 750;
             Animation.WORDMARK_FINAL_OPACITY = 1;
@@ -160,7 +160,7 @@
             Animation.CONTENT_TOP_PADDING = 20;
 
             Animation.NODE_LAYERS = 14;
-            Animation.NODE_LAYER_DEFAULT_ROWS = 12;
+            Animation.NODE_LAYER_DEFAULT_ROWS = 9;
             Animation.NODE_LAYER_ID_PREFIX = "node_layer_";
             Animation.NODE_LAYER_SCALE = 1.7;
             Animation.NODE_LAYER_SLOWDOWN_FACTOR = 0.5;
@@ -168,7 +168,7 @@
             Animation.NODE_COL_SQUEEZE_FACTOR = 1;
             Animation.NODE_LAYERS_EASE_FN = "cubic";
             Animation.NODE_LAYERS_EASE_DURATION_MS = 1000;
-            Animation.NODE_LAYERS_FINAL_OPACITY = 1;
+            Animation.NODE_LAYERS_FINAL_OPACITY = 0.9;
             Animation.NODE_LAYER_CENTER_X = 114;
             Animation.NODE_LAYER_CENTER_Y = 109;
             Animation.NODE_LAYER_DEFAULT_ROW_EVAPORATION_FACTOR = 0.05;
@@ -608,7 +608,7 @@
             Animation.position_content = function(verbose, cb) {
                 if (verbose) console.log("position_content");
                 Animation.update_logo_background_state();
-                $('#content').css("padding-top", Animation.num_as_px(Animation.logo_background.height + Animation.CONTENT_TOP_PADDING));
+                $('#content').css("padding-top", Animation.num_as_px(Animation.logo_background.height + Animation.CONTENT_TOP_PADDING / 2));
                 if ($('#content').css("opacity") == 0) {
                     d3.select('#content').transition().ease(Animation.CONTENT_EASE_FN).duration(Animation.CONTENT_EASE_DURATION_MS).style('opacity', Animation.CONTENT_FINAL_OPACITY).each("end", function() { if (cb) cb(); });
                 }

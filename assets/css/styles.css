@@ -1,6 +1,10 @@
 body {
     margin: 0;
     padding: 0;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5em;
+    font-size: 18px;
 }
 
 #background {
@@ -9,7 +13,7 @@ body {
 
 img.logo_background {
     position: relative;
-    max-width: 100%;
+    width: 100%;
     top: 0%;
     left: 0%;
 }
@@ -26,7 +30,7 @@ img.logo_background:empty {
 
 #parent_container {
     font-family: 'Open Sans', sans-serif;
-    margin-top: 40px;
+    margin-top: 50px;
 }
 
 #content {
@@ -69,22 +73,21 @@ img.logo_background:empty {
 }
 
 .main, .contact {
-    padding-left: 40px;
-    padding-right: 40px;
-}
-
-.main {
-    font-size: 18px;
+    padding-right: 1.2em;
+    padding-left: 1.2em;
 }
 
 .contact {
     font-size: small;
+    line-height: 1.6em;
+
 }
 
 #animation_settings {
     display: table;
     margin: auto;
     background-color: #f2f2f2;
+    display: none;
 }
 
 .settings_form {
